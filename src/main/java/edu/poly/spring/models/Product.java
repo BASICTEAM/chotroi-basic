@@ -14,30 +14,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "postings")
-public class Posting {
-	
+@Table(name = "products")
+public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
 	private Integer id;
-	
+
 	@Column(length = 100)
-	private boolean type;
+	private String name;
 	
 	@ManyToOne
-	@JoinColumn(name = "id", insertable=false, updatable=false)
-	private User user;
+	@JoinColumn(name = "producttypeId")
+	private ProductType producttype;
 	
-	@ManyToOne
-	@JoinColumn(name = "id", insertable=false, updatable=false)
-	private Shop shop;
-	
-	@ManyToOne
-	@JoinColumn(name = "productId")
-	private Product product;
-	
-	@OneToMany(mappedBy = "posting", cascade = CascadeType.ALL)
-	private Set<PostingDetail> postings;
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private Set<Posting> postings;
 	
 }

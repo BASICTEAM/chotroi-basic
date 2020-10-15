@@ -36,6 +36,9 @@ public class Shop {
 
 	@Column(columnDefinition = "nvarchar(50)")
 	private String shopname;
+	
+	@Column(length = 50)
+	private String businesscode;
 
 	@Column(length = 100, columnDefinition = "nvarchar(500)")
 	private String address;
@@ -60,7 +63,7 @@ public class Shop {
 	}
 
 	public Shop(Integer id, String username, String passwrod, String phone, String email, String picture,
-			String shopname, String address, String information, String status,
+			String shopname, String businesscode, String address, String information, String status,
 			Set<Posting> postings, Set<PostingSaved> postingsaveds, Set<Rate> rates) {
 		super();
 		this.id = id;
@@ -70,6 +73,7 @@ public class Shop {
 		this.email = email;
 		this.picture = picture;
 		this.shopname = shopname;
+		this.businesscode = businesscode;
 		this.address = address;
 		this.information = information;
 		this.status = status;
@@ -132,6 +136,14 @@ public class Shop {
 
 	public void setShopname(String shopname) {
 		this.shopname = shopname;
+	}
+
+	public String getBusinesscode() {
+		return businesscode;
+	}
+
+	public void setBusinesscode(String businesscode) {
+		this.businesscode = businesscode;
 	}
 
 	public String getAddress() {

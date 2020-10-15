@@ -33,6 +33,12 @@ public class PostingDetail {
 	@Column
 	private double price;
 	
+	@Column(columnDefinition = "nvarchar(255)")
+	private String manufacturer;
+	
+	@Column(columnDefinition = "nvarchar(255)")
+	private String product_type;
+	
 	@ManyToOne
 	@JoinColumn(name = "postingId")
 	private Posting posting;

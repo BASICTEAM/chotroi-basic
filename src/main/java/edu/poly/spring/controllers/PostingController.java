@@ -8,7 +8,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PostingController {
+	
+	@RequestMapping("/json/categories")
+	public String readJson() {		
+		return "json/categories";
+	}
 
+	@RequestMapping("/posting")
+	public String posting(ModelMap model) {
+		
+		return "posting/posting";
+	}
+	
 	@RequestMapping("/search")
 	public String search(ModelMap model, @RequestParam(name = "k") String keyword) {
 		

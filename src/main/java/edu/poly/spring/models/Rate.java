@@ -23,6 +23,12 @@ public class Rate {
 	@Column
 	private Integer type;
 	
+	@Column
+	private Integer point;
+	
+	@Column(columnDefinition = "nvarchar(50)")
+	private String image;
+	
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	private User user;
