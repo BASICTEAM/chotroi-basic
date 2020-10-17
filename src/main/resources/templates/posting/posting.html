@@ -67,11 +67,22 @@
                 </div>
             </div>
             <div class="col-md-9 col-12">
+            <div th:if="${message != null}">
+			<span th:text="${message}"></span></div>
+            <form th:action="@{/postingdetails/saveOrUpdate}" th:object="${postingDetailDto}"
+			method="post" enctype="multipart/form-data" >
+			 <div class="form-group">
+				 <label>Loai Tin:</label>
+				  <select th:field="*{postingId}">
+				<option th:each="posting : ${postings}" th:value="${posting.id}"
+					th:text="${posting.type}"></option>
+			</select> 
+			</div>
                 <div class="form-group">
                     <label>Tiêu đề:</label>
-                    <input type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
+                    <input th:field="*{title}" type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
                 </div>
-                <div class="form-group">
+              <!-- <div class="form-group">
                     <label>Thông tin sản phẩm:</label>
                     <div class="row">
                         <div class="col">
@@ -81,26 +92,29 @@
                             <input type="text" class="form-control" placeholder="Loại sản phẩm">
                         </div>
                     </div>
-                </div>
+                </div> -->  
                 <div class="form-group">
                     <label>Nội dung mô tả:</label>
-                    <input type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
+                    <input th:field="*{content}" type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
                 </div>
                 <div class="form-group">
                     <label>Giá cả:</label>
-                    <input type="text" class="form-control" name="" id="" placeholder="Giá cả">
+                    <input th:field="*{price}" type="text" class="form-control" name="" id="" placeholder="Giá cả">
                 </div>
                 <div class="form-group">
                     <label>Hỉnh ảnh:</label>
-                    <input type="file" class="form-control" name="" id="" placeholder="Giá cả">
+                    <input type="file" th:field="*{photo1}" class="form-control" name="" id="" placeholder="Giá cả">
+                    <input type="file" th:field="*{photo2}" class="form-control" name="" id="" placeholder="Giá cả">
+                    <input type="file" th:field="*{photo3}" class="form-control" name="" id="" placeholder="Giá cả">
+                    <input type="file" th:field="*{photo4}" class="form-control" name="" id="" placeholder="Giá cả">
                 </div>
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary">Đăng tin</button>
                 </div>
+                </form>
             </div>
         </div>
     </div>
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
