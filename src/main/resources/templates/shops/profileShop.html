@@ -29,7 +29,7 @@
                 <span> <i class="fa fa-user-circle" aria-hidden="true"></i> Tài khoản của
                     tôi</span>
                 <li><a th:href="@{'/shops/profile/' + ${item.Id}}" class="text-danger">Hồ sơ</a></li>
-                <li><a th:href="@{/shops/changepassword}">Đổi mật khẩu</a></li>
+                <!-- <li><a th:href="@{/shops/changepassword}">Đổi mật khẩu</a></li> -->
                 <li><a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
                         aria-controls="collapseExample"> Quên mật khẩu </a>
                     <div class="collapse" id="collapseExample">
@@ -74,15 +74,12 @@
                         <label for="shop">Tên đại lý:</label> <input type="text" class="form-control" th:field="*{Shopname}" name="shop" id="shop" aria-describedby="helpId" placeholder="Tên đại lý">
                     </div>
                     <div class="form-group">
-                        <label for="numberShop">Mã số kinh doanh:</label> <input type="text" class="form-control" th:field="*{Businesscode}" name="numberShop" id="numberShop" aria-describedby="helpId" placeholder="Mã số kinh doanh">
-                    </div>
-                    <div class="form-group">
                         <label for="address">Địa chỉ:</label>
                         <textarea class="form-control" rows="3" th:field="*{address}" name="address" id="address" aria-describedby="helpId" placeholder="Địa chỉ"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="information">Thông tin:</label>
-                        <textarea class="form-control" rows="3" th:field="*{information}" name="information" id="information" aria-describedby="helpId" placeholder="Địa chỉ"></textarea>
+                        <textarea class="form-control" rows="3" th:field="*{information}" name="information" id="information" aria-describedby="helpId" placeholder="Thông tin"></textarea>
                     </div>
                     <div class="form-group text-right mt-4">
                         <button class="btn btn-outline-warning button-profile">Cập nhật</button>

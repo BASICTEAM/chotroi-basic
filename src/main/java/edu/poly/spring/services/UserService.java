@@ -30,9 +30,13 @@ public interface UserService {
 
 	User save(User entity);
 
-	List<User> findByUsernameLikeOrderByUsername(String name);
+	List<User> findByUsernameLikeOrderByFullname(String name);
 
 	User findByUsername(String username);
+
+	List<User> findUsersByFullnameContaining(String name);
+
+	List<User> findUsersByStatus(String name);
 
 
 }

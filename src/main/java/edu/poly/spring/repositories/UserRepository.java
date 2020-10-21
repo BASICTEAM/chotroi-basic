@@ -8,6 +8,7 @@ import edu.poly.spring.models.User;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
 	User findByUsername(String username);
-	List<User> findByUsernameLikeOrderByUsername(String name);
-	
+	List<User> findByUsernameLikeOrderByFullname(String name);
+	List<User> findUsersByFullnameContaining(String name);
+	List<User> findUsersByStatus(String name);
 }

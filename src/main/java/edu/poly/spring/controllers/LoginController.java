@@ -1,5 +1,8 @@
 package edu.poly.spring.controllers;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
@@ -248,23 +254,29 @@ public class LoginController {
 		model.addAttribute("user", null);
 		model.addAttribute("userLogin", null);
 		model.addAttribute("shopLogin", null);
-		
 
 		return "logins/register";
 
 	}
 
 	@PostMapping("/save-signup-user")
-	public String saveSignupUser(ModelMap model, Shop shopDTO, User userDTO) {
+	public String saveSignupUser(ModelMap model, User userDTO, Shop shopDTO) {
 		String username = userDTO.getUsername();
 		String email = userDTO.getEmail();
 
 		String error = checkRegister(username, email);
 		if (!error.equals("")) {
+
+			model.addAttribute("userRegister", new User());
+			model.addAttribute("shopRegister", new Shop());
+			model.addAttribute("user", null);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", null);
 			model.addAttribute("messageError", error);
 
 			return "logins/register";
 		}
+		System.out.println("4");
 
 		User user = new User();
 		user.setUsername(userDTO.getUsername());
@@ -284,17 +296,23 @@ public class LoginController {
 		String strEmail = user.getEmail();
 		String phone = user.getPhone();
 		String text = "Xin chào " + username
-				+ ",\n \nChúc mừng bạn đã hoàn thành tông tin đăng ký tài khoản.\nBạn đã trở thành đại lý đối tác của Chợ Trời.\nDưới đây là thông tin tài khoản đã đăng ký:\n\t- Tên đăng nhập: "
+				+ ",\n \nChúc mừng bạn đã hoàn thành thông tin đăng ký tài khoản.\nBạn đã trở thành khách hàng của Chợ Trời.\nDưới đây là thông tin tài khoản đã đăng ký:\n\t- Tên đăng nhập: "
 				+ strUsername + "\n\t- Email: " + strEmail + "\n\t- Số điện thoại: " + phone
-				+ "\nNhập vào đường link để kích hoạt tài khoản của bạn. Nếu trang không hiển thị, bạn có thể sao chép và dán liên kết vào trình duyệt của mình: http://localhost:8080/active&i="
-				+ id + "&e=" + strEmail
-				+ "&t=e1e1cdcebc9a1c004cb9cf7f5ac2d4c5\nLiên hệ với chúng tôi qua email: chotroi.basic@gmail.com để được hỗ trợ nhiều hơn.\n \nThân ái!";
+				+ "\nNhập vào đường link để kích hoạt tài khoản của bạn. Nếu trang không hiển thị, bạn có thể sao chép và dán liên kết vào trình duyệt của mình: http://localhost:8080/active-account?id="
+				+ id + "&username=" + username + "&email=" + strEmail
+				+ "\nLiên hệ với chúng tôi qua email: chotroi.basic@gmail.com để được hỗ trợ nhiều hơn.\n \nThân ái.";
 
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(email);
 		message.setSubject("ĐĂNG KÝ TÀI KHOẢN THÀNH CÔNG");
 		message.setText(text);
 		this.emailSender.send(message);
+
+		model.addAttribute("userRegister", new User());
+		model.addAttribute("shopRegister", new Shop());
+		model.addAttribute("user", null);
+		model.addAttribute("userLogin", null);
+		model.addAttribute("shopLogin", null);
 
 		return "logins/register";
 	}
@@ -319,56 +337,135 @@ public class LoginController {
 		shop.setStatus("not-activated");
 		shopService.save(shop);
 
+		// Send mail
+		Integer id = shop.getId();
+		String strUsername = shop.getUsername();
+		String strEmail = shop.getEmail();
+		String phone = shop.getPhone();
+		String text = "Xin chào " + username
+				+ ",\n \nChúc mừng bạn đã hoàn thành thông tin đăng ký tài khoản.\nBạn đã trở thành đại lý đối tác của Chợ Trời.\nDưới đây là thông tin tài khoản đã đăng ký:\n\t- Tên đăng nhập: "
+				+ strUsername + "\n\t- Email: " + strEmail + "\n\t- Số điện thoại: " + phone
+				+ "\nNhập vào đường link để kích hoạt tài khoản của bạn. Nếu trang không hiển thị, bạn có thể sao chép và dán liên kết vào trình duyệt của mình: http://localhost:8080/active-account?id="
+				+ id + "&username=" + username + "&email=" + strEmail
+				+ "\nLiên hệ với chúng tôi qua email: chotroi.basic@gmail.com để được hỗ trợ nhiều hơn.\n \nThân ái.";
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(email);
+		message.setSubject("ĐĂNG KÝ TÀI KHOẢN THÀNH CÔNG");
+		message.setText(text);
+		this.emailSender.send(message);
+
 		model.addAttribute("message", "Đăng ký thành công!");
+
+		model.addAttribute("userRegister", new User());
+		model.addAttribute("shopRegister", new Shop());
+		model.addAttribute("user", null);
+		model.addAttribute("userLogin", null);
+		model.addAttribute("shopLogin", null);
 
 		return "logins/register";
 	}
-	
+
 	@RequestMapping("/request-active-account")
 	public String requestActiveAccount(ModelMap model) {
 
-//		if (UserLogin.ROLE_USER.equals("shop")) {
-//			model.addAttribute("userLogin", UserLogin.SHOP);
-//		}
-//		
-//		if (UserLogin.ROLE_USER.equals("user")) {
-//			model.addAttribute("userLogin", UserLogin.USER);
-//		}		
-		
-		model.addAttribute("status", "show");
+		model.addAttribute("iconSuccess", null);
 
-		return "logins/activeAccount";
+		if (UserLogin.ROLE_USER == null) {
+			model.addAttribute("message", "Bạn phải đăng nhập để sử dụng chức năng này!");
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			return "logins/login";
+		}
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+
+			return "logins/activeAccount";
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+
+			return "logins/activeAccount";
+		}
+
+		model.addAttribute("message", "Bạn phải đăng nhập để sử dụng chức năng này!");
+		model.addAttribute("userLoginDTO", new UserLoginDTO());
+		return "logins/login";
+
 	}
 
 	@RequestMapping("/active-account")
 	public String activeEmail(ModelMap model, @RequestParam(name = "id") Integer id,
-			@RequestParam(name = "email") String email) {
+			@RequestParam(name = "username") String username, @RequestParam(name = "email") String email) {
 
-		Optional<Shop> shop = shopService.findById(id);
-		shop.get().setStatus("unblock");
-		Shop shop2 = new Shop();
-		BeanUtils.copyProperties(shop.get(), shop2);
-		shopService.save(shop2);
+		User user = userService.findByUsername(username);
+		if(user != null) {
+			user.setStatus("activated");
+			userService.save(user);
+			
+			model.addAttribute("messageComplete", "Tài khoản của bạn đã kích hoạt thành công!");
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			return "logins/login";
+		}
+		
+		Shop shop = shopService.findByUsername(username);
+		if(shop != null) {
+			shop.setStatus("activated");
+			shopService.save(shop);
+			
+			model.addAttribute("messageComplete", "Tài khoản của bạn đã kích hoạt thành công!");
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			return "logins/login";
+		}
 
-		model.addAttribute("messageComplete", "Tài khoản của bạn đã kích hoạt thành công!");
-		model.addAttribute("shop", new Shop());
-		return "homes/login";
+		model.addAttribute("message", "Đường link của bạn không đúng hoặc đã bị hết hạn!");
+		model.addAttribute("userLoginDTO", new UserLoginDTO());
+		return "logins/login";
 	}
 
 	@RequestMapping("/send-active")
 	public String sendActive(ModelMap model, RedirectAttributes redirectAttributes) {
- 
-		int id = 1; 
-		
-		Optional<Shop> shop = shopService.findById(id);
+
+		Integer id = 0;
+		String username = "";
+		String email = "";
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+
+			id = shop.getId();
+			username = shop.getUsername();
+			email = shop.getEmail();
+
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+
+			id = user.getId();
+			username = user.getUsername();
+			email = user.getEmail();
+
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+		}
 
 		// Send mail
-		String username = shop.get().getUsername();
-		String email = shop.get().getEmail();
 		String text = "Xin chào " + username
-				+ ",\n \nCảm ơn bạn đã đăng ký tài khoản Chợ Trời.\n \nNhấn vào đường link để kích hoạt tài khoản của bạn. Nếu trang không hiển thị, bạn có thể sao chép và dán liên kết vào trình duyệt của mình: http://localhost:8080/active?id="
-				+ id + "&email" + email + "" + id + "&e=" + email
-				+ "&t=e1e1cdcebc9a1c004cb9cf7f5ac2d4c5\n \nLiên hệ với chúng tôi qua email: chotroi.basic@gmail.com để được hỗ trợ nhiều hơn.\n \nThân ái,";
+				+ ",\n \nCảm ơn bạn đã đăng ký tài khoản Chợ Trời.\n \nNhấn vào đường link để kích hoạt tài khoản của bạn. Nếu trang không hiển thị, bạn có thể sao chép và dán liên kết vào trình duyệt của mình: http://localhost:8080/active-account?id="
+				+ id + "&username=" + username + "&email=" + email
+				+ " \nVui lòng không tiếc lộ email này vì lý do bảo mật. \nCó thể liên hệ với chúng tôi qua email: chotroi.basic@gmail.com để được hỗ trợ nhiều hơn.\n \nThân ái.";
 
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(email);
@@ -376,11 +473,9 @@ public class LoginController {
 		message.setText(text);
 		this.emailSender.send(message);
 
-		redirectAttributes.addFlashAttribute("message", "Mã kích hoạt đã được gửi về hộp thư!");
-		model.addAttribute("messageComplete", "Tài khoản của bạn đã kích hoạt thành công!");
-		model.addAttribute("user", shop);
+		model.addAttribute("iconSuccess", "show");
 
-		return "redirect:/shops/detailshop/" + id;
+		return "logins/activeAccount";
 	}
 
 	private String checkRegister(String username, String email) {

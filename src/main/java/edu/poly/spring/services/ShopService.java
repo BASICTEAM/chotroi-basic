@@ -36,4 +36,8 @@ public interface ShopService {
 
 	List<Shop> findByUsernameLikeOrderByUsername(String name);
 
+	List<Shop> findSubjectsByShopnameContaining(String name);
+
+	List<Shop> findShopsByStatus(String name);
+
 }

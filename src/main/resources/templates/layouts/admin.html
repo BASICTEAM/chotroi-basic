@@ -21,7 +21,7 @@
     <header class="sticky-top">
 	    <div class="bg-danger admin-submit-email" th:if="${user} != null" >
 	    	<span th:if="${user.Status == 'not-activated'}">
-	    		Tài khoản của bạn chưa kích hoạt. Vui lòng kích hoạt tài khoản <a th:href="@{'/sendActive&i=' + ${user.Id}} +'&e={email}&t=e1e1cdcebc9a1c004cb9cf7f5ac2d4c5'" class="">tại đây</a>.
+	    		Tài khoản của bạn chưa kích hoạt. Vui lòng kích hoạt tài khoản <a th:href="@{/request-active-account}" class="">tại đây</a>.
 	    	</span>
 	    </div>
 	    <nav class="navbar navbar-expand-lg navbar-light bg-light">

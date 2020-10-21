@@ -16,6 +16,16 @@ public class ShopServiceImpl implements ShopService{
 	ShopRepository shopRepository;
 	
 	@Override
+	public List<Shop> findShopsByStatus(String name) {
+		return shopRepository.findShopsByStatus(name);
+	}
+
+	@Override
+	public List<Shop> findSubjectsByShopnameContaining(String name) {
+		return shopRepository.findSubjectsByShopnameContaining(name);
+	}
+
+	@Override
 	public List<Shop> findByUsernameLikeOrderByUsername(String name) {
 		return shopRepository.findByUsernameLikeOrderByUsername("%" + name + "%");
 	}

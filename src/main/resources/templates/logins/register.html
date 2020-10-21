@@ -35,9 +35,9 @@
 						<h5 th:text="${message}" class="alert alert-success text-center"></h5>
 				</div>
 					<div th:if="${messageError != null}">
-						<h5 th:text="${messageError}" class="alert alert-danger text-center">no message</h5>
+						<h5 th:text="${messageError}" class="alert alert-danger text-center"></h5>
 				</div>
-					<form th:action="@{/save-signup-user}" method="post" th:object="${userRegister}" enctype="multipart/form-data">
+					<form th:action="@{/save-signup-user}" method="post" th:object="${userRegister}">
 						<div class="form-group"><label for="username">Tài khoản:</label> <input type="text" class="form-control"
 							th:field="*{username}" placeholder="Tài khoản" required></div>
 						<div class="form-group"><label for="password">Mật khẩu:</label> <input type="password" class="form-control"
@@ -45,7 +45,7 @@
 						<div class="form-group"><label for="email">Email:</label> <input type="email" class="form-control"
 							th:field="*{email}" placeholder="Email" required></div>
 						<div class="form-group"><label for="phone">Số điện thoại:</label> <input type="text" class="form-control"
-							th:field="*{phone}" placeholder="Số điện thoại" required></div>
+							th:field="*{phone}" placeholder="Số điện thoại" maxlength="10" minlength="10" required></div>
 
 						<div class="form-group form-check"><input type="checkbox" class="form-check-input" id="exampleCheck1"
 							required> <label for="agree-term" class="label-agree-term">Tôi đồng ý tất cả các tuyên bố trong <a
@@ -94,17 +94,11 @@
 							</div>
 						</label></div>
 						<div class="text-center"><input class="btn button-register" type="submit" value="Đăng ký" /></div>
-				</form>
-			</div>
+					</form>
+				</div>
 
 
 				<div id="Shop" class="w3-container user" style="display: none">
-					<!-- <div th:if="${message != null}">
-					    	<h5 th:text="${message}" class="alert alert-success text-center"></h5>
-					    </div> -->
-					<div th:if="${messageError != null}">
-						<h5 th:text="${messageError}" class="alert alert-danger text-center">no message</h5>
-				</div>
 					<form th:action="@{/save-signup-shop}" method="post" th:object="${shopRegister}" enctype="multipart/form-data">
 						<div class="form-group"><label for="username">Tài khoản:</label> <input type="text" class="form-control"
 							th:field="*{username}" placeholder="Tài khoản" required></div>
@@ -113,7 +107,7 @@
 						<div class="form-group"><label for="email">Email:</label> <input type="email" class="form-control"
 							th:field="*{email}" placeholder="Email" required></div>
 						<div class="form-group"><label for="phone">Số điện thoại:</label> <input type="text" class="form-control"
-							th:field="*{phone}" placeholder="Số điện thoại" required></div>
+							th:field="*{phone}" placeholder="Số điện thoại" maxlength="10" minlength="10" required></div>
 
 						<div class="form-group form-check"><input type="checkbox" class="form-check-input" id="exampleCheck1"
 							required> <label for="agree-term" class="label-agree-term">Tôi đồng ý tất cả các tuyên bố trong <a

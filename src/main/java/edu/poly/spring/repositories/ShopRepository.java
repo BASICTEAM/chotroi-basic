@@ -12,5 +12,6 @@ public interface ShopRepository extends CrudRepository<Shop, Integer>{
 
 	Shop findByUsername(String username);
 	List<Shop> findByUsernameLikeOrderByUsername(String name);
-	
+	List<Shop> findSubjectsByShopnameContaining(String name);	
+	List<Shop> findShopsByStatus(String name);
 }
