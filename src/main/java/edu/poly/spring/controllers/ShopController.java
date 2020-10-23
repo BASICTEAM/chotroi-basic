@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import edu.poly.spring.dtos.EditshopDto;
 import edu.poly.spring.dtos.UserLoginDTO;
+import edu.poly.spring.dtos.changePasswordDto;
 import edu.poly.spring.helpers.UserLogin;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
@@ -157,18 +158,18 @@ public class ShopController {
 		model.addAttribute("user", shop);
 		model.addAttribute("userLogin", null);
 		model.addAttribute("shopLogin", shop);
-		
+
 		Optional<Shop> optShop = shopService.findById(id);
 		if (optShop.isPresent()) {
 			strImage = optShop.get().getPicture();
 
-			EditshopDto dto = new EditshopDto();
+			changePasswordDto dto = new changePasswordDto();
 			BeanUtils.copyProperties(optShop.get(), dto);
 			model.addAttribute("user", shop);
 			model.addAttribute("editshopDto", dto);
 			model.addAttribute("user", shop);
 			model.addAttribute("name", optShop.get().getUsername());
-			
+
 			return "shops/changePassword";
 		}
 
@@ -315,69 +316,60 @@ public class ShopController {
 //		return "shops/detailShop";
 //	}
 //
-////	@RequestMapping("/changepassword")
-////	public String changePassword(Model model, ShopDto shopDto) {
-////
-////		// Check login
-////		if (!UserLogin.authenticated()) {
-////			model.addAttribute("shop", new Shop());
-////			model.addAttribute("message", "Please log in to access!!");
-////			return "homes/login";
-////		}
-////
-////		// Set user login
-////		Shop shop = UserLogin.USER;
-////		model.addAttribute("user", shop);
-////
-////		shopDto.setUsername(shop.getUsername());
-////		model.addAttribute("shopDto", shopDto);
-////
-////		return "shops/changePassword";
-////	}
+
 //
-////	@PostMapping("/changepassword")
-////	public String updatePassword(Model model, @Validated ShopDto shopDto, BindingResult result) {
-////
-////		// Check login
-////		if (!UserLogin.authenticated()) {
-////			model.addAttribute("shop", new Shop());
-////			model.addAttribute("message", "Please log in to access!!");
-////			return "homes/login";
-////		}
-////
-////		// Set user login
-////		Shop shop = UserLogin.USER;
-////		model.addAttribute("user", shop);
-////
-////		if (!shop.getPassword().equals(shopDto.getOldPassword())) {
-////			model.addAttribute("checkValid", "Mật khẩu cũ không đúng!");
-////			return "shops/changePassword";
-////		}
-////		if (!shopDto.getNewPassword().equals(shopDto.getPassword())) {
-////			model.addAttribute("checkValid", "Mật khẩu xác nhận không đúng!");
-////			return "shops/changePassword";
-////		}
-////
-////		Shop shopUpdate = new Shop();
-////
-////		shopUpdate.setId(shop.getId());
-////		shopUpdate.setUsername(shop.getUsername());
-////		shopUpdate.setEmail(shop.getEmail());
-////		shopUpdate.setPhone(shop.getPhone());
-////		shopUpdate.setAddress(shop.getAddress());
-////		shopUpdate.setInformation(shop.getInformation());
-////		shopUpdate.setShopname(shop.getShopname());
-////		shopUpdate.setBusinesscode(shop.getBusinesscode());
-////		shopUpdate.setPassword(shopDto.getPassword());
-////		shopUpdate.setPicture(shop.getPicture());
-////
-////		shopService.save(shopUpdate);
-////
-////		UserLogin.USER = shopUpdate;
-////
-////		model.addAttribute("message", "Đã đổi mật khẩu thành công!");
-////
-////		// Send mail
+	@PostMapping("/changepassword")
+	public String updatePassword(Model model, @Validated changePasswordDto shopDto, BindingResult result) {
+
+		// Check login
+		if (!UserLogin.authenticated_shop()) {
+			model.addAttribute("shop", new Shop());
+			model.addAttribute("message", "Please log in to access!!");
+			return "homes/login";
+		}
+
+		// Set user login
+		Shop shop = UserLogin.SHOP;
+		model.addAttribute("user", shop);
+
+		if (!shop.getPassword().equals(shopDto.getOldpassword())) {
+			model.addAttribute("checkValid", "Mật khẩu cũ không đúng!");
+			return "shops/changePassword";
+		}
+		if (!shopDto.getNewpassword().equals(shopDto.getRepassword())) {
+			model.addAttribute("checkValid", "Mật khẩu xác nhận không đúng!");
+			return "shops/changePassword";
+		}
+
+		Shop shopUpdate = new Shop();
+
+		shopUpdate.setId(UserLogin.SHOP.getId());
+		shopUpdate.setUsername(shop.getUsername());
+		shopUpdate.setEmail(shop.getEmail());
+		shopUpdate.setPhone(shop.getPhone());
+		shopUpdate.setAddress(shop.getAddress());
+		shopUpdate.setInformation(shop.getInformation());
+		shopUpdate.setShopname(shop.getShopname());
+		shopUpdate.setPassword(shopDto.getRepassword());
+		shopUpdate.setPicture(shop.getPicture());
+		shopUpdate.setStatus(UserLogin.SHOP.getStatus());
+
+		shopService.save(shopUpdate);
+
+		UserLogin.SHOP = shopUpdate;
+
+		model.addAttribute("message", "Đã đổi mật khẩu thành công!");
+		Optional<Shop> optShop = shopService.findById(UserLogin.SHOP.getId());
+		strImage = optShop.get().getPicture();
+		changePasswordDto dto = new changePasswordDto();
+		BeanUtils.copyProperties(optShop.get(), dto);
+		model.addAttribute("user", shop);
+		model.addAttribute("editshopDto", dto);
+		model.addAttribute("user", shop);
+		model.addAttribute("userLogin", null);
+		model.addAttribute("shopLogin", shop);
+
+		// Send mail
 ////		String username = shop.getUsername();
 ////		String name = shop.getShopname();
 ////		String email = shop.getEmail();
@@ -401,9 +393,9 @@ public class ShopController {
 ////		message.setSubject("ĐỔI MẬT KHẨU CHỢ TRỜI");
 ////		message.setText(text);
 ////		this.emailSender.send(message);
-////
-////		return "shops/changePassword";
-////	}
+		return "shops/changePassword";
+	}
+
 //
 //	@RequestMapping("/find")
 //	public String find(ModelMap model, @RequestParam(defaultValue = "") String name) {
