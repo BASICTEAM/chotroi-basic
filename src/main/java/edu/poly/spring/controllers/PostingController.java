@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import edu.poly.spring.dtos.PostingDetailDto;
+import edu.poly.spring.dtos.UserLoginDTO;
+import edu.poly.spring.helpers.UserLogin;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
+import edu.poly.spring.models.Product;
+import edu.poly.spring.models.Shop;
+import edu.poly.spring.models.User;
 import edu.poly.spring.services.PostingDetailService;
 import edu.poly.spring.services.PostingService;
+import edu.poly.spring.services.ProductService;
+import edu.poly.spring.services.UserService;
 
 @Controller
 @RequestMapping("/postingdetails")
 public class PostingController {
+
 	public String image1 = "";
 	public String image2 = "";
 	public String image3 = "";
@@ -38,6 +46,12 @@ public class PostingController {
 
 	@Autowired
 	PostingService postingService;
+
+	@Autowired
+	private ProductService productService;
+
+	@Autowired
+	private UserService userService;
 
 	@RequestMapping("/find-all")
 	public List<Posting> findAll() {
@@ -60,20 +74,80 @@ public class PostingController {
 
 	@GetMapping("/posting")
 	public String add(ModelMap model) {
-		PostingDetailDto postingDetail = new PostingDetailDto();
-		model.addAttribute("postingDetailDto", postingDetail);
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+		}
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+		}
+		model.addAttribute("postingDetailDto", new PostingDetailDto());
 		return "postings/posting";
 
 	}
 
 	@PostMapping("/saveOrUpdate")
-	public String saveOrUpdate(ModelMap model, @Validated PostingDetailDto postingDetailDto, BindingResult result) {
+	public String saveOrUpdate(ModelMap model, @Validated PostingDetailDto postingDetailDto, BindingResult result,
+			@RequestParam(value = "productName", required = false) String productName,
+			@RequestParam(value = "postingType", required = false) boolean postingType) {
+
+		// Check login
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		}
+
+		if (productName.equals("") || productName == null) {
+			if (UserLogin.ROLE_USER.equals("user")) {
+				User user = UserLogin.USER;
+				model.addAttribute("user", user);
+				model.addAttribute("userLogin", user);
+				model.addAttribute("shopLogin", null);
+			}
+			if (UserLogin.ROLE_USER.equals("shop")) {
+				Shop shop = UserLogin.SHOP;
+				model.addAttribute("user", shop);
+				model.addAttribute("userLogin", null);
+				model.addAttribute("shopLogin", shop);
+			}
+			model.addAttribute("messageError", "Bạn chưa chọn danh mục sản phẩm!");
+			return "postings/posting";
+		}
+
 		if (result.hasErrors()) {
 			System.out.println(result);
 			model.addAttribute("message", "Please input or required fields!!");
 			model.addAttribute("postingDetailDto", postingDetailDto);
 			return "postings/posting";
 		}
+
+		Product product = productService.findByName(productName);
+
+		Posting posting = new Posting();
+		posting.setType(postingType);
+		posting.setProduct(product);
+		posting.setDate(new Date());
+		posting.setStatus("unapproved");
+		posting.setUser(UserLogin.USER);
+
+		postingService.save(posting);
+
+		Posting pt = postingService.findTopByOrderByIdDesc();
+		PostingDetail postingDetail = new PostingDetail();
+		postingDetail.setId(postingDetailDto.getId());
+		postingDetail.setTitle(postingDetailDto.getTitle());
+		postingDetail.setManufacturer(postingDetailDto.getManufacturer());
+		postingDetail.setProduct_type(postingDetailDto.getProduct_type());
+		postingDetail.setContent(postingDetailDto.getContent());
+		postingDetail.setPrice(postingDetailDto.getPrice());
+		postingDetail.setPosting(pt);
+
 		if (postingDetailDto.getId() != 0 && postingDetailDto.getId() > 0) {
 			model.addAttribute("message", "The tin updated!");
 		} else {
@@ -118,37 +192,44 @@ public class PostingController {
 
 		}
 
-		PostingDetail pt = new PostingDetail();
-		pt.setId(postingDetailDto.getId());
-		pt.setTitle(postingDetailDto.getTitle());
-		pt.setContent(postingDetailDto.getContent());
 		if (postingDetailDto.getPhoto1().getOriginalFilename().equals("")) {
-			pt.setPicture1(image1);
+			postingDetail.setPicture1(image1);
 		} else {
-			pt.setPicture1(postingDetailDto.getPhoto1().getOriginalFilename());
+			postingDetail.setPicture1(postingDetailDto.getPhoto1().getOriginalFilename());
 		}
 		if (postingDetailDto.getPhoto2().getOriginalFilename().equals("")) {
-			pt.setPicture2(image2);
+			postingDetail.setPicture2(image2);
 		} else {
-			pt.setPicture2(postingDetailDto.getPhoto2().getOriginalFilename());
+			postingDetail.setPicture2(postingDetailDto.getPhoto2().getOriginalFilename());
 		}
 		if (postingDetailDto.getPhoto3().getOriginalFilename().equals("")) {
-			pt.setPicture3(image3);
+			postingDetail.setPicture3(image3);
 		} else {
-			pt.setPicture3(postingDetailDto.getPhoto3().getOriginalFilename());
+			postingDetail.setPicture3(postingDetailDto.getPhoto3().getOriginalFilename());
 		}
 		if (postingDetailDto.getPhoto4().getOriginalFilename().equals("")) {
-			pt.setPicture4(image4);
+			postingDetail.setPicture4(image4);
 		} else {
-			pt.setPicture4(postingDetailDto.getPhoto4().getOriginalFilename());
+			postingDetail.setPicture4(postingDetailDto.getPhoto4().getOriginalFilename());
 		}
-		pt.setPrice(postingDetailDto.getPrice());
-		Posting posting = new Posting();
-		posting.setId(postingDetailDto.getPostingId());
-		pt.setPosting(posting);
 
-		postingDetailService.save(pt);
-		model.addAttribute("postingDetailDto", postingDetailDto);
+		postingDetailService.save(postingDetail);
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+		}
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+		}
+
+		model.addAttribute("postingDetailDto", new PostingDetailDto());
+		model.addAttribute("message", "Tin đã đăng thành công!");
 		return "postings/posting";
 	}
 

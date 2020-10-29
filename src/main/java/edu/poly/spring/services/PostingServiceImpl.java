@@ -1,5 +1,6 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,63 +10,73 @@ import edu.poly.spring.models.Posting;
 import edu.poly.spring.repositories.PostingRepository;
 
 @Service
-public class PostingServiceImpl implements PostingService{
-@Autowired
-private PostingRepository postingRepository;
+public class PostingServiceImpl implements PostingService {
+	@Autowired
+	private PostingRepository postingRepository;
 
-@Override
-public Posting save(Posting entity) {
-	return postingRepository.save(entity);
-}
+	@Override
+	public List<Posting> findPostingsByStatus(String name) {
+		return postingRepository.findPostingsByStatus(name);
+	}
 
-@Override
-public Iterable<Posting> saveAll(Iterable<Posting> entities) {
-	return postingRepository.saveAll(entities);
-}
+	@Override
+	public Posting findTopByOrderByIdDesc() {
+		return postingRepository.findTopByOrderByIdDesc();
+	}
 
-@Override
-public Optional<Posting> findById(Integer id) {
-	return postingRepository.findById(id);
-}
+	@Override
+	public Posting save(Posting entity) {
+		return postingRepository.save(entity);
+	}
 
-@Override
-public boolean existsById(Integer id) {
-	return postingRepository.existsById(id);
-}
+	@Override
+	public Iterable<Posting> saveAll(Iterable<Posting> entities) {
+		return postingRepository.saveAll(entities);
+	}
 
-@Override
-public Iterable<Posting> findAll() {
-	return postingRepository.findAll();
-}
+	@Override
+	public Optional<Posting> findById(Integer id) {
+		return postingRepository.findById(id);
+	}
 
-@Override
-public Iterable<Posting> findAllById(Iterable<Integer> ids) {
-	return postingRepository.findAllById(ids);
-}
+	@Override
+	public boolean existsById(Integer id) {
+		return postingRepository.existsById(id);
+	}
 
-@Override
-public long count() {
-	return postingRepository.count();
-}
+	@Override
+	public Iterable<Posting> findAll() {
+		return postingRepository.findAll();
+	}
 
-@Override
-public void deleteById(Integer id) {
-	postingRepository.deleteById(id);
-}
+	@Override
+	public Iterable<Posting> findAllById(Iterable<Integer> ids) {
+		return postingRepository.findAllById(ids);
+	}
 
-@Override
-public void delete(Posting entity) {
-	postingRepository.delete(entity);
-}
+	@Override
+	public long count() {
+		return postingRepository.count();
+	}
 
-@Override
-public void deleteAll(Iterable<Posting> entities) {
-	postingRepository.deleteAll(entities);
-}
+	@Override
+	public void deleteById(Integer id) {
+		postingRepository.deleteById(id);
+	}
 
-@Override
-public void deleteAll() {
-	postingRepository.deleteAll();
-}
+	@Override
+	public void delete(Posting entity) {
+		postingRepository.delete(entity);
+	}
+
+	@Override
+	public void deleteAll(Iterable<Posting> entities) {
+		postingRepository.deleteAll(entities);
+	}
+
+	@Override
+	public void deleteAll() {
+		postingRepository.deleteAll();
+	}
 
 }

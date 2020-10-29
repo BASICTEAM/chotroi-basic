@@ -8,26 +8,38 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class PostingDetailDto {
 	private int id;
+	
 	@NotNull
 	@NotEmpty(message = "Tittle is empty")
-	@Length(min = 5, max = 50, message = "Title is out of range")
+	@Length(min = 5, message = "Title is out of range")
 	private String title;
+	
 	@NotNull
 	@NotEmpty(message = "Content is empty")
-	@Length(min = 5, max = 300, message = "Content is out of range")
+	@Length(min = 5, message = "Content is out of range")
 	private String content;
-	@NotNull
+	
 	private MultipartFile photo1;
-	@NotNull
+	
 	private MultipartFile photo2;
-	@NotNull
+	
 	private MultipartFile photo3;
-	@NotNull
+	
 	private MultipartFile photo4;
+	
 	@NotNull
 	private double price;
+	
 	private String manufacturer;
-	@NotNull
+	
+	private String product_type;
+	
+	public String getProduct_type() {
+		return product_type;
+	}
+	public void setProduct_type(String product_type) {
+		this.product_type = product_type;
+	}
 	private Integer postingId;
 	public int getId() {
 		return id;

@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "producttypes")
 public class ProductType {
@@ -22,7 +24,44 @@ public class ProductType {
 	@Column(columnDefinition = "nvarchar(100)")
 	private String name;
 	
-	@OneToMany(mappedBy = "producttype", cascade = CascadeType.ALL)
+//	@JsonIgnoreProperties(value = {"producttype"})
+	@OneToMany(mappedBy = "producttype")
 	private Set<Product> products;
+
+	public ProductType(Integer id, String name, Set<Product> products) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.products = products;
+	}
+
+	public ProductType() {
+		super();
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Set<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Set<Product> products) {
+		this.products = products;
+	}
+	
 	
 }

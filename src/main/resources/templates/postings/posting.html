@@ -1,23 +1,14 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin.html}">
 
 <head>
     <title>Title</title>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="/libs/angular/angular.min.js"></script>
-    <script src="/libs/angular-route/angular-route.js"></script>
-    <script src="/js/app.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <style>
-    	.body{
-    		background-color: #f5f0e1;
-    	}
         .btn-collapsed-icon {
             border: solid #222;
             border-width: 0 1px 1px 0;
@@ -31,101 +22,166 @@
         .card-category a.btn.collapsed h6 {
             transform: rotate(40deg);
             -webkit-transform: rotate(40deg);
-            transition: .3s transform ease-in-out;
+            transition: 0.3s transform ease-in-out;
         }
 
         .card-category a.btn h6 {
             transform: rotate(-140deg);
             -webkit-transform: rotate(-140deg);
-            transition: .3s transform ease-in-out;
+            transition: 0.3s transform ease-in-out;
         }
     </style>
+    <script type="text/javascript">
+        function getProduct(value) {
+        	document.getElementById("productId").value = value;
+        }
+
+        function previewFile(input) {
+            var file1 = document.getElementById("uploadPicture1");
+            var file2 = document.getElementById("uploadPicture2");
+            var file3 = document.getElementById("uploadPicture3");
+            var file4 = document.getElementById("uploadPicture4");
+
+            if (file1.value != '') {
+                file1.style.display = "none";
+                file2.style.display = "block";
+            }
+            if (file2.value != '') {
+                file2.style.display = "none";
+                file3.style.display = "block";
+            }
+            if (file3.value != '') {
+                file3.style.display = "none";
+                file4.style.display = "block";
+            }
+            if (file4.value != '') {
+                file4.style.display = "none";
+            }      
+
+            const [file] = input.files;
+            const preview = document.getElementById("preview");
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.width = 150;
+                img.height = 150;
+                img.alt = "file";
+
+                preview.appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+    </script>
 </head>
 
 <body>
-    <div class="container-fluid" ng-app="myApp">
-        <div class="row col-12" ng-controller="categories">
+    <div class="container-fluid mb-5" ng-app="myApp" layout:fragment="content">
+        <div class="row col-12" ng-controller="posting">
             <div class="col-12 text-center">
-                <h4>Đăng tin</h4>
-                <hr>
+                <h2 class="text-uppercase">ĐĂNG TIN</h2>
+                <h5 class="text-muted">Đăng các món đồ đã qua sử dụng và bạn không còn sử dụng đến. Chúng tôi sẽ giải quyết giúp bạn!</h5>
+                <hr />
             </div>
-            <div class="col-md-3 col-12 accordion" id="accordionExample" style="font-size: 11px;">
-                <div class="" ng-repeat="item in list_categories">
+            <div class="col-md-3 col-12 accordion" id="accordionExample" style="font-size: 12px">
+            	<h5 class="text-center font-weight-bold">Danh mục sản phẩm</h5>
+                <div class="" ng-repeat="item in list_product">
                     <div class="card-category" id="heading{{$index}}">
                         <a class="list-group-item btn collapsed text-left" type="button" data-toggle="collapse"
                             data-target="#collapse{{$index}}" aria-expanded="true" aria-controls="collapse{{$index}}"
-                            style="font-size: 12px;">
-                            {{item.Name}} <h6 class="mr-3 btn-collapsed-icon"></h6>
+                            style="font-size: 12px">
+                            <span class="font-weight-bold">{{item.name}}</span>
+                            <h6 class="mr-3 btn-collapsed-icon"></h6>
                         </a>
                     </div>
                     <div id="collapse{{$index}}" class="collapse" aria-labelledby="heading{{$index}}"
                         data-parent="#accordionExample">
                         <input type="button" class="list-group-item list-group-item-action"
-                            ng-repeat="i in item.catalogDetails" value="> {{i.name}}" />
-
+                            ng-repeat="i in item.products" value="{{i.name}}"  onclick="getProduct(this.value)"/>
                     </div>
                 </div>
             </div>
             <div class="col-md-9 col-12">
-            <div th:if="${message != null}">
-			<span th:text="${message}"></span></div>
-            <form th:action="@{/postingdetails/saveOrUpdate}" th:object="${postingDetailDto}"
-			method="post" enctype="multipart/form-data" >
-			 <div class="form-group">
-				 <label>Loai Tin:</label>
-				  <select th:field="*{postingId}">
-				<option th:each="posting : ${postings}" th:value="${posting.id}"
-					th:text="${posting.type}"></option>
-			</select> 
-			</div>
-                <div class="form-group">
-                    <label>Tiêu đề:</label>
-                    <input th:field="*{title}" type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
+                <span id="demo"></span>
+                <div th:if="${message != null}">
+                    <h6 class="alert alert-success text-center" th:text="${message}"></h6>
                 </div>
-              <!-- <div class="form-group">
-                    <label>Thông tin sản phẩm:</label>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Hãng sản xuất">
+                <div th:if="${messageError != null}">
+                    <h6 class="alert alert-danger text-center" th:text="${messageError}"></h6>
+                </div>
+                <form th:action="@{/postingdetails/saveOrUpdate}" th:object="${postingDetailDto}" method="post"
+                    enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="font-weight-bold">Nhu cầu:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" th:name="postingType" name="typePosting" id="typePosting1"
+                                value="true" />
+                            <label class="form-check-label" for="typePosting1">Muốn mua</label>
                         </div>
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Loại sản phẩm">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" th:name="postingType" name="typePosting" id="typePosting2"
+                                value="false" checked />
+                            <label class="form-check-label" for="typePosting2">Muốn bán</label>
                         </div>
                     </div>
-                </div> -->  
-                <div class="form-group">
-                    <label>Nội dung mô tả:</label>
-                    <input th:field="*{content}" type="text" class="form-control" name="" id="" placeholder="Tiêu đề">
-                </div>
-                <div class="form-group">
-                    <label>Giá cả:</label>
-                    <input th:field="*{price}" type="text" class="form-control" name="" id="" placeholder="Giá cả">
-                </div>
-                <div class="form-group">
-                    <label>Hỉnh ảnh:</label>
-                    <input type="file" th:field="*{photo1}" class="form-control" name="" id="" placeholder="Giá cả">
+                    <div class="form-group">
+                    	<label class="font-weight-bold">Danh mục:</label>
+                    	<input th:name="productName" type="text" class="form-control" name="" id="productId"
+                            placeholder="Danh mục" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Tiêu đề:</label>
+                        <input th:field="*{title}" type="text" class="form-control" name="" id="" maxlength="500	"
+                            placeholder="MacBook Pro 16 inch - Intel Core i9 8-Core 2.4GHz / 64GB / 8TB / Radeon Pro 5500M 8GB - Space Gray" />
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Hãng sản xuất:</label>
+                        <input th:field="*{manufacturer}" type="text" class="form-control" name="" id=""
+                            placeholder="Apple, Samsung, Asus, HP,..." />
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Loại sản phẩm:</label>
+                        <input th:field="*{product_type}" type="text" class="form-control" name="" id=""
+                            placeholder="Mackbook Pro 16 inch, SAMSUNG Galaxy Book Flex, Laptop Asus F571GT-BQ266T..." />
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Nội dung mô tả:</label>
+                        <textarea rows="5" th:field="*{content}" class="form-control" name="" id=""
+                            placeholder="CPU, Ram, GPU, Ổ cứng,..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Giá cả:</label>
+                        <input th:field="*{price}" type="text" class="form-control" name="" id=""
+                            placeholder="Giá cả" />
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Hỉnh ảnh:</label>
+                        <div id="preview"></div>
+                        <input type="file" th:field="*{photo1}" class="form-control col-3" id="uploadPicture1"
+                            onchange="previewFile(this);" />
+                        <input type="file" th:field="*{photo2}" class="form-control col-3" id="uploadPicture2"
+                            onchange="previewFile(this);" style="display: none" />
+                        <input type="file" th:field="*{photo3}" class="form-control col-3" id="uploadPicture3"
+                            onchange="previewFile(this);" style="display: none" />
+                        <input type="file" th:field="*{photo4}" class="form-control col-3" id="uploadPicture4"
+                            onchange="previewFile(this);" style="display: none" />
+                        <!-- <input type="file" th:field="*{photo1}" class="form-control" name="" id="" placeholder="Giá cả">
                     <input type="file" th:field="*{photo2}" class="form-control" name="" id="" placeholder="Giá cả">
                     <input type="file" th:field="*{photo3}" class="form-control" name="" id="" placeholder="Giá cả">
-                    <input type="file" th:field="*{photo4}" class="form-control" name="" id="" placeholder="Giá cả">
-                </div>
-                <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary">Đăng tin</button>
-                </div>
+                    <input type="file" th:field="*{photo4}" class="form-control" name="" id="" placeholder="Giá cả"> -->
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary rounded">Đăng tin</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+
+    
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import edu.poly.spring.models.Posting;
@@ -27,5 +28,9 @@ public interface PostingService {
 	Iterable<Posting> saveAll(Iterable<Posting> entities);
 
 	Posting save(Posting entity);
+
+	Posting findTopByOrderByIdDesc();
+
+	List<Posting> findPostingsByStatus(String name);
 
 }

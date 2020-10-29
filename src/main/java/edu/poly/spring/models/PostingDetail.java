@@ -13,6 +13,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "postingdetails")
 public class PostingDetail {
@@ -49,6 +52,7 @@ public class PostingDetail {
 	private String product_type;
 	
 	@ManyToOne
+	@JsonIgnoreProperties(value = {"holidayDates"})
 	@JoinColumn(name = "postingId")
 	private Posting posting;
 	
@@ -142,7 +146,7 @@ public class PostingDetail {
 	public void setPosting(Posting posting) {
 		this.posting = posting;
 	}
-
+	
 	public Set<PostingSaved> getPostingsaveds() {
 		return postingsaveds;
 	}
@@ -150,7 +154,7 @@ public class PostingDetail {
 	public void setPostingsaveds(Set<PostingSaved> postingsaveds) {
 		this.postingsaveds = postingsaveds;
 	}
-
+	
 	public PostingDetail(Integer id, String title, String content, String picture1, String picture2, String picture3,
 			String picture4, double price, String manufacturer, String product_type, Posting posting,
 			Set<PostingSaved> postingsaveds) {

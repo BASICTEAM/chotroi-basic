@@ -17,6 +17,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
@@ -62,6 +63,7 @@ public class User {
 	@Column
 	private boolean gender;
 	
+	@JsonIgnoreProperties(value = {"user"})
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Posting> postings;
 	

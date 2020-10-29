@@ -1,10 +1,11 @@
 var app = angular.module("myApp", ["ngRoute"]);
 
-app.controller("categories", function($scope, $http) {
+app.controller("posting", function($scope, $http) {
 
-	$scope.list_categories = [];
-	$http.get("/json/categories.json").then(function(res) {
-		$scope.list_categories = res.data;
+	$scope.list_product = [];
+	
+	$http.get("/products-type/find-all").then(function(res) {
+		$scope.list_product = res.data;
 	});
 
 	$scope.showval = true;

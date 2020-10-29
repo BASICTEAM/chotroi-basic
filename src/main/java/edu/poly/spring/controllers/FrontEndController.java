@@ -4,18 +4,26 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.poly.spring.models.Posting;
+import edu.poly.spring.models.Product;
+import edu.poly.spring.models.ProductType;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
+import edu.poly.spring.services.PostingService;
+import edu.poly.spring.services.ProductService;
+import edu.poly.spring.services.ProductTypeService;
 import edu.poly.spring.services.ShopService;
 import edu.poly.spring.services.UserService;
 
@@ -27,30 +35,44 @@ public class FrontEndController {
 
 	@Autowired
 	private ShopService shopService;
+
+	@Autowired
+	private ProductTypeService productTypeService;
+
+	@Autowired
+	private ProductService productService;
 	
-	@RequestMapping("/json/categories")
-	public String readJson() {
-		return "libs/json/categories";
-	}
-	
+	@Autowired
+	private PostingService postingService;
+
+	// -------------------------
+	// ------ LIBS MANAGER -----
+	// -------------------------
+
 	@RequestMapping("/libs/angular.min.js")
 	public String readFileAngular() {
 		return "libs/angular/angular.min.js";
 	}
-	
+
 	@RequestMapping("/libs/angular.route.js")
 	public String readFileAngularRoute() {
 		return "libs/angular-route/angular.route.js";
-	}
-	@RequestMapping("/users/find-all")
-	public List<User> findAllUsers() {
-		return (List<User>) userService.findAll();
 	}
 
 	// -------------------------
 	// ------ USER MANAGER -----
 	// -------------------------
 
+	@RequestMapping("/users/find-all")
+	public List<User> findAllUsers() {
+		return (List<User>) userService.findAll();
+	}
+	
+	@PostMapping("/users/insert-all-users")
+	public List<User> insertAllUsers(@RequestBody List<User> users) {
+		return (List<User>) userService.saveAll(users);
+	}
+	
 	@RequestMapping("/users/list-activated")
 	public List<User> listUsersActivated() {
 		return (List<User>) userService.findUsersByStatus("activated");
@@ -119,6 +141,11 @@ public class FrontEndController {
 	public List<Shop> findAllShops() {
 		return (List<Shop>) shopService.findAll();
 	}
+	
+	@PostMapping("/shops/insert-all-shops")
+	public List<Shop> insertAllShops(@RequestBody List<Shop> users) {
+		return (List<Shop>) shopService.saveAll(users);
+	}
 
 	@RequestMapping("/shops/list-activated")
 	public List<Shop> listShopsActivated() {
@@ -174,4 +201,101 @@ public class FrontEndController {
 		shopService.save(shop.get());
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
+
+	// -------------------------
+	// ------ PRODUCT MANAGER -----
+	// -------------------------
+
+	@RequestMapping("/products/find-all")
+	public List<Product> findAllProducts() {
+		return (List<Product>) productService.findAll();
+	}
+
+	@RequestMapping("/products-type/find-all")
+	public List<ProductType> findAllProductsType() {
+		return (List<ProductType>) productTypeService.findAll();
+	}
+
+	@PostMapping("/products-type/insert-all")
+	public List<ProductType> insertAllProductType(@RequestBody List<ProductType> productTypes) {
+		return (List<ProductType>) productTypeService.saveAll(productTypes);
+	}
+
+	@PostMapping("/products/insert-all")
+	public List<Product> insertAllProduct(@RequestBody List<Product> productTypes) {
+		return (List<Product>) productService.saveAll(productTypes);
+	}
+
+	// -------------------------
+	// ------ POSTING MANAGER -----
+	// -------------------------
+	
+	@RequestMapping("/postings/find-all")
+	public List<Posting> findAllPostings(){
+		return (List<Posting>) postingService.findAll();
+	}
+	
+	@RequestMapping("/postings/list-unapproved")
+	public List<Posting> findStatusUnapproved(){
+		return postingService.findPostingsByStatus("unapproved");
+	}
+	
+	@RequestMapping("/postings/list-approved")
+	public List<Posting> findStatusApproved(){
+		return postingService.findPostingsByStatus("approved");
+	}
+	
+	@RequestMapping("/postings/list-sold")
+	public List<Posting> findStatusSold(){
+		return postingService.findPostingsByStatus("sold");
+	}
+	
+	@RequestMapping("/postings/list-block")
+	public List<Posting> findStatusBlock(){
+		return postingService.findPostingsByStatus("block");
+	}
+	
+	@GetMapping("/postings/{id}/get")
+	public Optional<Posting> getPosting(@PathVariable("id") Integer id) {
+		return postingService.findById(id);
+	}
+
+	@DeleteMapping("/postings/{id}/delete")
+	public ResponseEntity<Void> deletePosting(@PathVariable("id") Integer id) {
+		postingService.deleteById(id);
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/postings/{id}/set-unapproved")
+	public ResponseEntity<Void> unapprovedPosting(@PathVariable("id") Integer id) {
+		Optional<Posting> posting = postingService.findById(id);
+		posting.get().setStatus("unapproved");
+		postingService.save(posting.get());
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/postings/{id}/set-approved")
+	public ResponseEntity<Void> approvedPosting(@PathVariable("id") Integer id) {
+		Optional<Posting> posting = postingService.findById(id);
+		posting.get().setStatus("approved");
+		postingService.save(posting.get());
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/postings/{id}/set-sold")
+	public ResponseEntity<Void> soldPosting(@PathVariable("id") Integer id) {
+		Optional<Posting> posting = postingService.findById(id);
+		posting.get().setStatus("sold");
+		postingService.save(posting.get());
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+
+	@PutMapping("/postings/{id}/set-block")
+	public ResponseEntity<Void> blockPosting(@PathVariable("id") Integer id) {
+		Optional<Posting> posting = postingService.findById(id);
+		posting.get().setStatus("block");
+		postingService.save(posting.get());
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+
 }

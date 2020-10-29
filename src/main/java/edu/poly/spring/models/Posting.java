@@ -1,5 +1,6 @@
 package edu.poly.spring.models;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "postings")
@@ -25,20 +33,46 @@ public class Posting {
 	@Column(length = 100)
 	private boolean type;
 	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date date;
+	
+	@Column(length = 15)
+	private String status;
+	
 	@ManyToOne
-	@JoinColumn(name = "id", insertable=false, updatable=false)
+	@JsonIgnoreProperties(value = {"postings"})
+	@JoinColumn(name = "userId")
 	private User user;
 	
 	@ManyToOne
-	@JoinColumn(name = "id", insertable=false, updatable=false)
+	@JsonIgnoreProperties(value = {"postings"})
+	@JoinColumn(name = "shopId")
 	private Shop shop;
 	
 	@ManyToOne
 	@JoinColumn(name = "productId")
 	private Product product;
 	
+	@JsonIgnoreProperties(value = {"posting"})
 	@OneToMany(mappedBy = "posting", cascade = CascadeType.ALL)
 	private Set<PostingDetail> postings;
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public Integer getId() {
 		return id;

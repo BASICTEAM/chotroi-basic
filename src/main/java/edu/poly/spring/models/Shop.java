@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "shops")
 public class Shop {
@@ -46,6 +48,7 @@ public class Shop {
 	@Column(length = 20)
 	private String status;
 	
+	@JsonIgnoreProperties(value = {"shop"})
 	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
 	private Set<Posting> postings;
 	
