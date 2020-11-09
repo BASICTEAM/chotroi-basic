@@ -15,6 +15,11 @@ public class PostingServiceImpl implements PostingService {
 	private PostingRepository postingRepository;
 
 	@Override
+	public List<Posting> findPostingsByProductId(Integer id) {
+		return postingRepository.findPostingsByProductId(id);
+	}
+
+	@Override
 	public List<Posting> findPostingsByStatus(String name) {
 		return postingRepository.findPostingsByStatus(name);
 	}

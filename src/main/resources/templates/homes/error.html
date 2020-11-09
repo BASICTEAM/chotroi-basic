@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin.html}">
+
+<head>
+    <title>CHỢ TRỜI | Website Chuyên Mua Bán, Rao Vặt Đồ Cũ</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+    
+    <div layout:fragment="content" class="my-5 text-center">
+	    <div class="alert alert-danger" role="alert">
+			<h1><i><i class="fad fa-debug"></i> ĐƯỜNG DẪN KHÔNG TỒN TẠI!</i></h1>
+		</div>
+    	
+    	<a class="btn btn-outline-warning" th:href="@{/}">
+	    	<i class="fad fa-home"></i> VỀ TRANG CHỦ
+	    </a>
+	</div>
+
+</body>
+
+</html>

@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin.html}">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link rel="shortcut icon" type="image/png" href="/images/choTroi2.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body ng-app="myApp">
+    <!-- Button palce -->
+    <div class="container col-10 mb-5" layout:fragment="content" ng-controller="postingDetails">
+        <div class="btn-group-filter">
+            <div class="btn-group btn-group-md">
+                <button type="button" class="btn btn-outline-dark btn-group-filter-choose" data-toggle="modal"
+                    data-target=".bs-example-modal-lg"><i class="far fa-building"></i> Chọn khu vực</button>
+                <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog"
+                    aria-labelledby="myLargeModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <form class="choose-place">
+                                <h3 class="sticky-top modal-title pl-3" style="background-color: white;"> Chọn khu vực
+                                </h3>
+                                <div class="list-group-choose-place">
+                                    <a href="#" class="list-group-item list-group-item-action">An Giang</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Bà Rịa – Vũng Tàu</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Bắc Giang</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Bắc Kạn</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Bạc Liêu</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Bắc Ninh</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Bến Tre</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Bình Định</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Bình Dương</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Bình Phước</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Bình Thuận</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Cà Mau</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Cần Thơ</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Cao Bằng</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Đà Nẵng</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Đắk Lắk</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Đắk Nông</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Điện Biên</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Đồng Nai</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Đồng Tháp</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Gia Lai</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hà Giang</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Hà Nam</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hà Nội</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hà Tĩnh</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hải Dương</a>
+                                    <a href="#" class="list-group-item list-group-item-action"> Hải Phòng</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hậu Giang</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hòa Bình</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Hưng Yên</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Khánh Hòa</a>
+                                    <a href="#" class="list-group-item list-group-item-action">Kiên Giang</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Button giá -->
+                <button type="button" class="btn btn-outline-dark btn-group-filter-choose" data-toggle="modal"
+                    data-target=".mymodal"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cash-stack"
+                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 3H1a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1h-1z" />
+                        <path fill-rule="evenodd"
+                            d="M15 5H1v8h14V5zM1 4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H1z" />
+                        <path
+                            d="M13 5a2 2 0 0 0 2 2V5h-2zM3 5a2 2 0 0 1-2 2V5h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 13a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+                    </svg> Chọn
+                    giá</button>
+
+                <div class="modal fade mymodal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header sticky-top">
+                                <h2 class="modal-title" style="background-color: white;">Giá</h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <p>
+                                    <dl>
+                                        <dt>Dưới 500.000đ:</dt>
+                                    </dl>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" value="">300.000-500.000đ
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" value="">150.000-300.000đ
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" value="">Dưới 150.000đ
+                                        </label>
+                                    </div>
+                                    </p>
+                                </div>
+                                <p>
+                                <dl>
+                                    <dt>Dưới 1.000.000đ:</dt>
+                                </dl>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">750.000-1.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">500.000-750.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">Dưới 500.000đ
+                                    </label>
+                                </div>
+                                </p>
+                                <p>
+                                <dl>
+                                    <dt>Dưới 3.000.000đ:</dt>
+                                </dl>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">2.500.000-3.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">2.000.000-2.500.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">Dưới 2.000.000đ
+                                    </label>
+                                </div>
+                                </p>
+                                <p>
+                                <dl>
+                                    <dt>Dưới 5.000.000đ:</dt>
+                                </dl>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">4.000.000-5.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">3.000.000-4.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">Dưới 3.000.000đ
+                                    </label>
+                                </div>
+                                </p>
+                                <p>
+                                <dl>
+                                    <dt>Dưới 10.000.000đ:</dt>
+                                </dl>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">8.000.000-10.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">6.000.000-8.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">Dưới 6.000.000đ
+                                    </label>
+                                </div>
+                                </p>
+                                <p>
+                                <dl>
+                                    <dt>Trên 10.000.000đ:</dt>
+                                </dl>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">10.000.000-20.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">20.000.000-40.000.000đ
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="">Trên 40.000.000đ
+                                    </label>
+                                </div>
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning btn-block">Áp dụng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-dark btn-group-filter-choose" data-toggle="modal"
+                    data-target=".locmodal"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-funnel"
+                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z" />
+                    </svg> Lọc chi
+                    tiết</button>
+
+                <div class="modal fade locmodal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title font-weight-bold" id="exampleModalPopoversLabel">LỌC CHI TIẾT
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container bs-docs-container">
+                                    <div class="list-group">
+                                        <a href="#">
+                                            <h4 class="list-group-item-heading">Sắp xếp theo</h4>
+                                            <p class="list-group-item-text">
+                                                <div class="list-group">
+                                                    <input type="radio" name="RadioInputName" value="Value1"
+                                                        id="Radio1" />
+                                                    <label class="list-group-item" for="Radio1">Tin mới trước</label>
+
+                                                    <input type="radio" name="RadioInputName" value="Value2"
+                                                        id="Radio2" />
+                                                    <label class="list-group-item" for="Radio2">Giá thấp trước</label>
+                                                </div>
+                                              </p>
+                                        </a>
+                                    </div>
+                                    <br>
+                                    <h5>Đăng bởi:</h5>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="optradio" checked>Cá nhân
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="optradio">Bán chuyên
+                                        </label>
+                                    </div>
+                                    <br><br>
+                                    <h5>Bạn muốn:</h5>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" value="">Mua
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" value="">Bán
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button " class="btn btn-warning">Áp dụng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Button palce -->
+        <!-- end list product -->
+        <!-- group ca nhan ban chuyen -->
+
+        <div class="text-primary mt-2" style="font-size: 95%;">
+            <a href="#">Chợ Trời</a> > <a href="#">Toàn quốc</a> > <a href="#">Laptop</a>
+        </div>
+        <br>
+        <ul class="list-group" ng-repeat="item in list_postingDetals">
+            <li class="list-group-item filtered-products-card" ng-click="goPostingDetail(item.id)"
+                style="cursor: pointer;">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <img class="card-img-top mt-3 img-thumbnail" th:src="@{/getimage1/{{item.id}}}" alt="Card image cap"
+                                height="120px">
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="card-body">
+                                <h5 class="text-body text-uppercase font-weight-bold">{{item.title}}</h5>
+                                <h5 class="text-danger">{{item.price | currency : "" : 0}} đ</h5>
+                                <div class="text-muted mt-4" style="font-size: 90%;">
+                                    <span>
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{item.posting.user.address}}{{item.posting.shop.address}}
+                                    </span> -
+                                    <span>{{item.posting.date | date : 'dd/MM/yyyy'}}</span> -
+                                    <i class="fas fa-user">
+                                        {{item.posting.user.fullname}}{{item.posting.shop.shopname}}</i>
+                                </div>
+                                <div class="text-right filtered-product-button-save-posting">
+                                    <button type="button" class="btn btn-danger"><i class="fas fa-heart"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    	<div class="mt-4 d-flex mx-auto">
+	    	<nav aria-label="Page navigation example">
+			  <ul class="pagination">
+			    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+			    <li class="page-item"><a class="page-link" href="#">1</a></li>
+			    <li class="page-item"><a class="page-link" href="#">2</a></li>
+			    <li class="page-item"><a class="page-link" href="#">3</a></li>
+			    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+			  </ul>
+			</nav>
+		</div>
+    </div>
+</body>
+
+</html>

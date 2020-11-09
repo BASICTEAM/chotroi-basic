@@ -86,6 +86,13 @@ public class LoginController {
 			if (username.equals(user.getUsername())) {
 				if (password.equals(user.getPassword())) {
 					User userLogin = userService.findByUsername(username);
+					
+					if (userLogin.getStatus().equals("block")) {
+						model.addAttribute("message", "Tài khoản của bạn đã bị khóa!");
+						model.addAttribute("userLoginDTO", new UserLoginDTO());
+
+						return "logins/login";
+					}
 
 					// set UserLogin
 					UserLogin.USER = userLogin;
@@ -106,6 +113,13 @@ public class LoginController {
 			if (username.equals(shop.getUsername())) {
 				if (password.equals(shop.getPassword())) {
 					Shop shopLogin = shopService.findByUsername(username);
+					
+					if (shopLogin.getStatus().equals("block")) {
+						model.addAttribute("message", "Tài khoản của bạn đã bị khóa!");
+						model.addAttribute("userLoginDTO", new UserLoginDTO());
+
+						return "logins/login";
+					}
 
 					// set UserLogin
 					UserLogin.SHOP = shopLogin;

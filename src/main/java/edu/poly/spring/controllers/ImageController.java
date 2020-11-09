@@ -25,9 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import edu.poly.spring.dtos.UploadForm;
 import edu.poly.spring.helpers.UserLogin;
 import edu.poly.spring.models.PostingDetail;
+import edu.poly.spring.models.Rate;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
 import edu.poly.spring.services.PostingDetailService;
+import edu.poly.spring.services.RateService;
 import edu.poly.spring.services.ShopService;
 import edu.poly.spring.services.UserService;
 
@@ -41,8 +43,12 @@ public class ImageController {
 
 	@Autowired
 	private UserService userService;
+
 	@Autowired
 	private PostingDetailService postingDetailService;
+
+	@Autowired
+	private RateService rateService;
 
 	private static String UPLOAD_DIR = "images";
 
@@ -61,7 +67,7 @@ public class ImageController {
 					return ResponseEntity.ok().contentLength(buffer.length)
 							.contentType(MediaType.parseMediaType("image/png")).body(bsr);
 				} catch (Exception e) {
-					log.info("User Image is null!");
+					log.info("Shop Image is null!");
 				}
 			}
 		}
@@ -79,6 +85,39 @@ public class ImageController {
 				} catch (Exception e) {
 					log.info("User Image is null!");
 				}
+			}
+		}
+
+		return ResponseEntity.badRequest().build();
+	}
+
+	@RequestMapping(value = "getimage/{username}/username", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadLinkImage(@PathVariable String username) {
+
+		Shop shop = shopService.findByUsername(username);
+		if (shop != null) {
+			try {
+				Path filename = Paths.get("images", shop.getPicture());
+				byte[] buffer = Files.readAllBytes(filename);
+				ByteArrayResource bsr = new ByteArrayResource(buffer);
+				return ResponseEntity.ok().contentLength(buffer.length)
+						.contentType(MediaType.parseMediaType("image/png")).body(bsr);
+			} catch (Exception e) {
+				log.info("Shop Image is null!");
+			}
+		}
+
+		User user = userService.findByUsername(username);
+		if (user != null) {
+			try {
+				Path filename = Paths.get("images", user.getPicture());
+				byte[] buffer = Files.readAllBytes(filename);
+				ByteArrayResource bsr = new ByteArrayResource(buffer);
+				return ResponseEntity.ok().contentLength(buffer.length)
+						.contentType(MediaType.parseMediaType("image/png")).body(bsr);
+			} catch (Exception e) {
+				log.info("User Image is null!");
 			}
 		}
 
@@ -184,7 +223,7 @@ public class ImageController {
 				return ResponseEntity.ok().contentLength(buffer1.length)
 						.contentType(MediaType.parseMediaType("image/png")).body(bsr1);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Posting Detail Image 1 is null!");
 			}
 
 		}
@@ -204,7 +243,7 @@ public class ImageController {
 				return ResponseEntity.ok().contentLength(buffer2.length)
 						.contentType(MediaType.parseMediaType("image/png")).body(bsr2);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Posting Detail Image 2 is null!");
 			}
 
 		}
@@ -224,7 +263,7 @@ public class ImageController {
 				return ResponseEntity.ok().contentLength(buffer3.length)
 						.contentType(MediaType.parseMediaType("image/png")).body(bsr3);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Posting Detail Image 3 is null!");
 			}
 
 		}
@@ -244,7 +283,27 @@ public class ImageController {
 				return ResponseEntity.ok().contentLength(buffer4.length)
 						.contentType(MediaType.parseMediaType("image/png")).body(bsr4);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Posting Detail Image 4 is null!");
+			}
+
+		}
+		return ResponseEntity.badRequest().build();
+	}
+
+	@RequestMapping(value = "getimage/{id}/rate", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> getImageRate(@PathVariable Integer id) {
+		Optional<Rate> optRate = rateService.findById(id);
+		if (optRate.isPresent()) {
+			Rate rate = optRate.get();
+			try {
+				Path filename2 = Paths.get("images", rate.getImage());
+				byte[] buffer2 = Files.readAllBytes(filename2);
+				ByteArrayResource bsr2 = new ByteArrayResource(buffer2);
+				return ResponseEntity.ok().contentLength(buffer2.length)
+						.contentType(MediaType.parseMediaType("image/png")).body(bsr2);
+			} catch (Exception e) {
+				log.info("Rate Image is null!");
 			}
 
 		}

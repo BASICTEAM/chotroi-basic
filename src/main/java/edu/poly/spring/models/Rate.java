@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,20 +19,77 @@ public class Rate {
 	private String reason;
 	
 	@Column
-	private Integer type;
-	
-	@Column
-	private Integer point;
+	private Double point;
 	
 	@Column(columnDefinition = "nvarchar(50)")
 	private String image;
 	
-	@ManyToOne
-	@JoinColumn(name = "userId")
-	private User user;
+	@Column(columnDefinition = "nvarchar(50)")
+	private String assessor;
 	
-	@ManyToOne
-	@JoinColumn(name = "shopId")
-	private Shop shop;
-	
+	@Column(columnDefinition = "nvarchar(50)")
+	private String supplyUnit;
+
+	public Rate() {
+		super();
+	}
+
+	public Rate(Integer id, String reason, Double point, String image, String assessor, String supplyUnit) {
+		super();
+		this.id = id;
+		this.reason = reason;
+		this.point = point;
+		this.image = image;
+		this.assessor = assessor;
+		this.supplyUnit = supplyUnit;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public Double getPoint() {
+		return point;
+	}
+
+	public void setPoint(Double point) {
+		this.point = point;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getAssessor() {
+		return assessor;
+	}
+
+	public void setAssessor(String assessor) {
+		this.assessor = assessor;
+	}
+
+	public String getSupplyUnit() {
+		return supplyUnit;
+	}
+
+	public void setSupplyUnit(String supplyUnit) {
+		this.supplyUnit = supplyUnit;
+	}
+
 }

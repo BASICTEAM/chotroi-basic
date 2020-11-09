@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.poly.spring.models.Posting;
+import edu.poly.spring.models.PostingDetail;
 import edu.poly.spring.models.Product;
 import edu.poly.spring.models.ProductType;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
+import edu.poly.spring.services.PostingDetailService;
 import edu.poly.spring.services.PostingService;
 import edu.poly.spring.services.ProductService;
 import edu.poly.spring.services.ProductTypeService;
@@ -44,11 +47,14 @@ public class FrontEndController {
 	
 	@Autowired
 	private PostingService postingService;
+	
+	@Autowired
+	private PostingDetailService postingDetailService;
 
 	// -------------------------
 	// ------ LIBS MANAGER -----
 	// -------------------------
-
+	
 	@RequestMapping("/libs/angular.min.js")
 	public String readFileAngular() {
 		return "libs/angular/angular.min.js";
@@ -298,4 +304,29 @@ public class FrontEndController {
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 
+	@GetMapping("postings/{id}/find-by-product")
+	public List<Posting> getPostingsByProduct(@PathVariable("id") Integer id){
+		return postingService.findPostingsByProductId(id);
+	}
+	
+	// -------------------------
+	// ------ POSTING DETAILS MANAGER -----
+	// -------------------------
+	
+	@GetMapping("{id}/get-postingdetail")
+	public  Optional<PostingDetail> getPostingDetailById(@PathVariable("id") Integer id){
+		return postingDetailService.findById(id);
+	}
+	
+	@GetMapping("postingdetails/{title}/find-by-title")
+	public List<PostingDetail> getPostingDetailsByTitle(@PathVariable("title") String title){
+		return postingDetailService.findPostingDetailByTitleContaining(title);
+	}
+	
+	@GetMapping("postingdetails/search")
+	public List<PostingDetail> getPostingddd(@RequestParam(name = "keyword") String keyword){
+		return postingDetailService.findPostingDetailByTitleContaining(keyword);
+	}
+	
+	
 }

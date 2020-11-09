@@ -11,4 +11,5 @@ import edu.poly.spring.models.Posting;
 public interface PostingRepository extends CrudRepository<Posting, Integer> {
 	Posting findTopByOrderByIdDesc();
 	List<Posting> findPostingsByStatus(String name);
+	List<Posting> findPostingsByProductId(Integer id);
 }

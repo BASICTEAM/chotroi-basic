@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "producttypes")
@@ -24,7 +25,7 @@ public class ProductType {
 	@Column(columnDefinition = "nvarchar(100)")
 	private String name;
 	
-//	@JsonIgnoreProperties(value = {"producttype"})
+	@JsonIgnoreProperties(value = {"producttype"})
 	@OneToMany(mappedBy = "producttype")
 	private Set<Product> products;
 

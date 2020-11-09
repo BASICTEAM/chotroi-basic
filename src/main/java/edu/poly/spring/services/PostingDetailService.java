@@ -32,4 +32,6 @@ public interface PostingDetailService {
 
 	List<Posting> findAllPostings();
 
+	List<PostingDetail> findPostingDetailByTitleContaining(String tile);
+
 }

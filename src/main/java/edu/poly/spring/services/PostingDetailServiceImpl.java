@@ -11,23 +11,25 @@ import edu.poly.spring.models.PostingDetail;
 import edu.poly.spring.repositories.PostingDetailRepository;
 import edu.poly.spring.repositories.PostingRepository;
 
-
-
 @Service
 public class PostingDetailServiceImpl implements PostingDetailService {
 	@Autowired
-PostingDetailRepository postingDetailRepository;
-@Autowired
-PostingRepository postingRepository;
-
-@Override
-public List<Posting> findAllPostings(){
-	return (List<Posting>) postingRepository.findAll();
-}
-
+	PostingDetailRepository postingDetailRepository;
+	@Autowired
+	PostingRepository postingRepository;
 
 	@Override
-	public PostingDetail  save(PostingDetail entity) {
+	public List<PostingDetail> findPostingDetailByTitleContaining(String tile) {
+		return postingDetailRepository.findPostingDetailByTitleContaining(tile);
+	}
+
+	@Override
+	public List<Posting> findAllPostings() {
+		return (List<Posting>) postingRepository.findAll();
+	}
+
+	@Override
+	public PostingDetail save(PostingDetail entity) {
 		return postingDetailRepository.save(entity);
 	}
 
@@ -80,6 +82,5 @@ public List<Posting> findAllPostings(){
 	public void deleteAll() {
 		postingDetailRepository.deleteAll();
 	}
-	
-	
+
 }

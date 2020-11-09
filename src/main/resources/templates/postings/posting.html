@@ -3,11 +3,6 @@
     layout:decorate="~{layouts/admin.html}">
 
 <head>
-    <title>Title</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
     <style>
         .btn-collapsed-icon {
             border: solid #222;
@@ -118,13 +113,13 @@
                         <label class="font-weight-bold">Nhu cầu:</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" th:name="postingType" name="typePosting" id="typePosting1"
-                                value="true" />
-                            <label class="form-check-label" for="typePosting1">Muốn mua</label>
+                                value="true"  style="cursor: pointer;"/>
+                            <label class="form-check-label" for="typePosting1" style="cursor: pointer;">Muốn mua</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" th:name="postingType" name="typePosting" id="typePosting2"
-                                value="false" checked />
-                            <label class="form-check-label" for="typePosting2">Muốn bán</label>
+                                value="false" checked style="cursor: pointer;" />
+                            <label class="form-check-label" for="typePosting2" style="cursor: pointer;">Muốn bán</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -158,16 +153,21 @@
                             placeholder="Giá cả" />
                     </div>
                     <div class="form-group">
+                        <label class="font-weight-bold">Địa chỉ:</label>
+                        <input th:field="*{address}" type="text" class="form-control" name="" id=""
+                            placeholder="Phường Hải Châu I, Quận Hải Châu, TP. Đà Nẵng" />
+                    </div>
+                    <div class="form-group">
                         <label class="font-weight-bold">Hỉnh ảnh:</label>
                         <div id="preview"></div>
                         <input type="file" th:field="*{photo1}" class="form-control col-3" id="uploadPicture1"
-                            onchange="previewFile(this);" />
+                            onchange="previewFile(this);" style="cursor: pointer;" />
                         <input type="file" th:field="*{photo2}" class="form-control col-3" id="uploadPicture2"
-                            onchange="previewFile(this);" style="display: none" />
+                            onchange="previewFile(this);" style="display: none;cursor: pointer;" />
                         <input type="file" th:field="*{photo3}" class="form-control col-3" id="uploadPicture3"
-                            onchange="previewFile(this);" style="display: none" />
+                            onchange="previewFile(this);" style="display: none;cursor: pointer;" />
                         <input type="file" th:field="*{photo4}" class="form-control col-3" id="uploadPicture4"
-                            onchange="previewFile(this);" style="display: none" />
+                            onchange="previewFile(this);" style="display: none;cursor: pointer;" />
                         <!-- <input type="file" th:field="*{photo1}" class="form-control" name="" id="" placeholder="Giá cả">
                     <input type="file" th:field="*{photo2}" class="form-control" name="" id="" placeholder="Giá cả">
                     <input type="file" th:field="*{photo3}" class="form-control" name="" id="" placeholder="Giá cả">

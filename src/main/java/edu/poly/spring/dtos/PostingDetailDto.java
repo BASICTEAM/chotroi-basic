@@ -34,6 +34,14 @@ public class PostingDetailDto {
 	
 	private String product_type;
 	
+	private String address;
+	
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
 	public String getProduct_type() {
 		return product_type;
 	}

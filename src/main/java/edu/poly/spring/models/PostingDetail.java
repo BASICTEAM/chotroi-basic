@@ -51,6 +51,9 @@ public class PostingDetail {
 	@Column(columnDefinition = "nvarchar(255)")
 	private String product_type;
 	
+	@Column(columnDefinition = "nvarchar(150)")
+	private String address;
+	
 	@ManyToOne
 	@JsonIgnoreProperties(value = {"holidayDates"})
 	@JoinColumn(name = "postingId")
@@ -58,6 +61,14 @@ public class PostingDetail {
 	
 	@OneToMany(mappedBy = "postingdetail", cascade = CascadeType.ALL)
 	private Set<PostingSaved> postingsaveds;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
 	public Integer getId() {
 		return id;

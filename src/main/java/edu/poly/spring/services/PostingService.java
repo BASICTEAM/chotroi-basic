@@ -33,4 +33,6 @@ public interface PostingService {
 
 	List<Posting> findPostingsByStatus(String name);
 
+	List<Posting> findPostingsByProductId(Integer id);
+
 }

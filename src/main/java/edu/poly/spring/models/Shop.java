@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -49,14 +50,12 @@ public class Shop {
 	private String status;
 	
 	@JsonIgnoreProperties(value = {"shop"})
+	@JsonIgnore
 	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
 	private Set<Posting> postings;
 	
 	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
 	private Set<PostingSaved> postingsaveds;
-	
-	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
-	private Set<Rate> rates;
 
 	public Shop() {
 		super();
@@ -78,7 +77,6 @@ public class Shop {
 		this.status = status;
 		this.postings = postings;
 		this.postingsaveds = postingsaveds;
-		this.rates = rates;
 	}
 
 	public Integer getId() {
@@ -175,14 +173,6 @@ public class Shop {
 
 	public void setPostingsaveds(Set<PostingSaved> postingsaveds) {
 		this.postingsaveds = postingsaveds;
-	}
-
-	public Set<Rate> getRates() {
-		return rates;
-	}
-
-	public void setRates(Set<Rate> rates) {
-		this.rates = rates;
 	}
 
 }
