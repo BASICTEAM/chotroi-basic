@@ -566,7 +566,7 @@ public class PostingController {
 		return "postings/posting";
 	}
 
-	@GetMapping("postings/{username}/profile")
+	@GetMapping("/{username}/profile")
 	public String getProfilePosting() {
 
 		return "postings/profile";

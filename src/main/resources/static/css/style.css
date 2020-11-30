@@ -1735,6 +1735,20 @@ aside {
     padding: 5px;
 }
 
+.card-postingdetail-buttonicon>a {
+    background-color: #ffc13b;
+    font-size: 11px;
+    padding: 5px;
+    width: 100px;
+    border-radius: 10px !important;
+    border: 0;
+}
+
+.card-postingdetail-buttonicon>a:hover {
+    background-color: #ff6e40;
+    color: white;
+}
+
 .card-postingdetail-buttonicon>button {
     background-color: #ffc13b;
     font-size: 11px;
