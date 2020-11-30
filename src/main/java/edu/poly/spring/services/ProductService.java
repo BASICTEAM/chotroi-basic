@@ -1,8 +1,10 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import edu.poly.spring.models.Product;
+import edu.poly.spring.models.ProductType;
 
 public interface ProductService {
 
@@ -29,5 +31,7 @@ public interface ProductService {
 	<S extends Product> S save(S entity);
 
 	Product findByName(String name);
+
+	List<Product> findByProducttype(ProductType productType);
 
 }

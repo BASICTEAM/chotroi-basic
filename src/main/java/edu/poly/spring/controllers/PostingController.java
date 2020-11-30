@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,12 +36,14 @@ import edu.poly.spring.dtos.RateDTO;
 import edu.poly.spring.dtos.ShowRate;
 import edu.poly.spring.dtos.UserLoginDTO;
 import edu.poly.spring.helpers.UserLogin;
+import edu.poly.spring.models.ChatBox;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
 import edu.poly.spring.models.Product;
 import edu.poly.spring.models.Rate;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
+import edu.poly.spring.services.ChatBoxService;
 import edu.poly.spring.services.PostingDetailService;
 import edu.poly.spring.services.PostingService;
 import edu.poly.spring.services.ProductService;
@@ -72,15 +75,95 @@ public class PostingController {
 	private RateService rateService;
 
 	@Autowired
+	private ChatBoxService chatBoxService;
+
+	@Autowired
 	private EntityManagerFactory entityManagerFactory;
 
+	static int idshop;
+	static int iduser;
+	static String sender = "";
 	public String image1 = "";
 	public String image2 = "";
 	public String image3 = "";
 	public String image4 = "";
 
 	@RequestMapping("/search")
-	public String demo(ModelMap model) {
+	public String search(ModelMap model) {
+		log.info("Request to Search");
+
+		// Don't login to system
+		if (!UserLogin.authenticated_user() && !UserLogin.authenticated_shop()) {
+			model.addAttribute("user", null);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", null);
+
+			return "postings/searchPostings";
+		}
+
+		// Login to system
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = shopService.findByUsername(UserLogin.SHOP.getUsername());
+			UserLogin.SHOP = shop;
+			model.addAttribute("user", UserLogin.SHOP);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", UserLogin.SHOP);
+
+			return "postings/searchPostings";
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = userService.findByUsername(UserLogin.USER.getUsername());
+			UserLogin.USER = user;
+			model.addAttribute("user", UserLogin.USER);
+			model.addAttribute("userLogin", UserLogin.USER);
+			model.addAttribute("shopLogin", null);
+
+			return "postings/searchPostings";
+		}
+
+		return "postings/searchPostings";
+	}
+
+	@RequestMapping("/loai-danh-muc/search")
+	public String searchProductsType(ModelMap model) {
+		log.info("Request to Search");
+
+		// Don't login to system
+		if (!UserLogin.authenticated_user() && !UserLogin.authenticated_shop()) {
+			model.addAttribute("user", null);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", null);
+
+			return "postings/searchPostings";
+		}
+
+		// Login to system
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = shopService.findByUsername(UserLogin.SHOP.getUsername());
+			UserLogin.SHOP = shop;
+			model.addAttribute("user", UserLogin.SHOP);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", UserLogin.SHOP);
+
+			return "postings/searchPostings";
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = userService.findByUsername(UserLogin.USER.getUsername());
+			UserLogin.USER = user;
+			model.addAttribute("user", UserLogin.USER);
+			model.addAttribute("userLogin", UserLogin.USER);
+			model.addAttribute("shopLogin", null);
+
+			return "postings/searchPostings";
+		}
+
+		return "postings/searchPostings";
+	}
+
+	@RequestMapping("/danh-muc/search")
+	public String searchProducts(ModelMap model) {
 		log.info("Request to Search");
 
 		// Don't login to system
@@ -307,11 +390,6 @@ public class PostingController {
 		return "redirect:/" + postingDetailId;
 	}
 
-	/*
-	 * @RequestMapping("/da-nang/laptop/76") public String postingDetail(ModelMap
-	 * model) { return "postings/postingDeatails"; }
-	 */
-
 	@GetMapping("/postingdetails/posting")
 	public String add(ModelMap model) {
 
@@ -382,7 +460,13 @@ public class PostingController {
 		posting.setProduct(product);
 		posting.setDate(new Date());
 		posting.setStatus("unapproved");
-		posting.setUser(UserLogin.USER);
+		
+		if (UserLogin.ROLE_USER.equals("user")) {
+			posting.setUser(UserLogin.USER);
+		}
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			posting.setShop(UserLogin.SHOP);
+		}
 
 		postingService.save(posting);
 
@@ -395,6 +479,7 @@ public class PostingController {
 		postingDetail.setContent(postingDetailDto.getContent());
 		postingDetail.setPrice(postingDetailDto.getPrice());
 		postingDetail.setPosting(pt);
+		postingDetail.setAddress(postingDetailDto.getAddress());
 
 		if (postingDetailDto.getId() != 0 && postingDetailDto.getId() > 0) {
 			model.addAttribute("message", "The tin updated!");
@@ -479,6 +564,167 @@ public class PostingController {
 		model.addAttribute("postingDetailDto", new PostingDetailDto());
 		model.addAttribute("message", "Tin đã đăng thành công!");
 		return "postings/posting";
+	}
+
+	@GetMapping("postings/{username}/profile")
+	public String getProfilePosting() {
+
+		return "postings/profile";
+	}
+
+	@GetMapping("/chat/{id}")
+	public String chat(ModelMap model, @PathVariable(name = "id") Integer id) {
+		
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			iduser = user.getId();
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+
+			Optional<User> optUser = userService.findById(iduser);
+			if (optUser.isPresent()) {
+				model.addAttribute("user", optUser.get());
+				sender = optUser.get().getFullname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
+					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
+					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where shops.id=" + id
+					+ " and users.id=" + iduser);
+
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("	select distinct chat.iduser,chat.idshop,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
+					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.iduser =" + iduser);
+			List<Object[]> list = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+				System.out.println("=======" + records[0]);
+				System.out.println("=======" + records[1]);
+
+			}
+			model.addAttribute("arrays", list1);
+			model.addAttribute("arrays1", list);
+			model.addAttribute("chatbox", new ChatBox());
+		}
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			iduser = shop.getId();
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+
+			Optional<Shop> optShop = shopService.findById(iduser);
+			if (optShop.isPresent()) {
+				model.addAttribute("shop", optShop.get());
+				sender = optShop.get().getShopname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
+					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
+					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where users.id=" + id
+					+ " and shops.id=" + iduser);
+
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("	select distinct chat.idshop,chat.iduser,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
+					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.idshop =" + iduser);
+			List<Object[]> list = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+				System.out.println("=======" + records[0]);
+				System.out.println("=======" + records[1]);
+
+			}
+			model.addAttribute("arrays", list1);
+			model.addAttribute("arrays1", list);
+			model.addAttribute("chatbox", new ChatBox());
+		}
+
+		return "homes/chat";
+	}
+
+	@PostMapping("/savechat")
+	public String savechat(ModelMap model, ChatBox chatbox) {
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			iduser = user.getId();
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+			
+			if (chatbox.getId() != null && chatbox.getId() > 0) {
+			}
+			
+			Shop shop = new Shop();
+			shop.setId(idshop);
+			chatbox.setShop(shop);
+			User user1 = new User();
+			user1.setId(iduser);
+			chatbox.setUser(user1);
+			chatbox.setTime(sender);
+			chatBoxService.save(chatbox);
+			model.addAttribute(chatbox);
+			System.out.println(chatbox.getMessage());
+
+		}
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			iduser = shop.getId();
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+			if (chatbox.getId() != null && chatbox.getId() > 0) {
+			}
+			Shop shop1 = new Shop();
+			shop1.setId(iduser);
+			chatbox.setShop(shop1);
+			User user = new User();
+			user.setId(idshop);
+			chatbox.setUser(user);
+			chatbox.setTime(sender);
+			chatBoxService.save(chatbox);
+			model.addAttribute(chatbox);
+			System.out.println(chatbox.getMessage());
+
+		}
+
+		return "homes/chat";
 	}
 
 }

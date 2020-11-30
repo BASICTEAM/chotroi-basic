@@ -1,9 +1,12 @@
 package edu.poly.spring.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import edu.poly.spring.models.Posting;
+import edu.poly.spring.models.Shop;
+import edu.poly.spring.models.User;
 
 public interface PostingService {
 
@@ -34,5 +37,11 @@ public interface PostingService {
 	List<Posting> findPostingsByStatus(String name);
 
 	List<Posting> findPostingsByProductId(Integer id);
+
+	List<Posting> findByShop(Shop shop);
+
+	List<Posting> findByUser(User user);
+
+	List<Posting> findTop16ByOrderByDateDesc();
 
 }

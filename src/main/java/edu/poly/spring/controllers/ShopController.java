@@ -104,7 +104,6 @@ public class ShopController {
 		try (InputStream inputStream = editshopDto.getImage().getInputStream()) {
 			Files.copy(inputStream, path.resolve(editshopDto.getImage().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
-			String filename = editshopDto.getImage().getOriginalFilename();
 			log.info("Image is " + editshopDto.getImage());
 		} catch (Exception e) {
 			log.info("Image is null");

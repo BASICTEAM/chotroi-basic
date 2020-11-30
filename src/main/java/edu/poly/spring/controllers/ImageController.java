@@ -50,7 +50,7 @@ public class ImageController {
 	@Autowired
 	private RateService rateService;
 
-	private static String UPLOAD_DIR = "images";
+	private static String UPLOAD_DIR = "src/main/resources/static/images/upload";
 
 	@RequestMapping(value = "getimage/{id}", method = RequestMethod.GET)
 	@ResponseBody
@@ -307,6 +307,22 @@ public class ImageController {
 			}
 
 		}
+		return ResponseEntity.badRequest().build();
+	}
+
+	@RequestMapping(value = "getimage/chotroi", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> getImageChoTroi() {
+		try {
+			Path filename2 = Paths.get("images", "choTroi.png");
+			byte[] buffer2 = Files.readAllBytes(filename2);
+			ByteArrayResource bsr2 = new ByteArrayResource(buffer2);
+			return ResponseEntity.ok().contentLength(buffer2.length).contentType(MediaType.parseMediaType("image/png"))
+					.body(bsr2);
+		} catch (Exception e) {
+			log.info("Rate Image is null!");
+		}
+
 		return ResponseEntity.badRequest().build();
 	}
 }

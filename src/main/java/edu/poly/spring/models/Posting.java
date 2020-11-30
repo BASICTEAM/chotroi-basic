@@ -124,10 +124,14 @@ public class Posting {
 		this.postings = postings;
 	}
 
-	public Posting(Integer id, boolean type, User user, Shop shop, Product product, Set<PostingDetail> postings) {
+
+	public Posting(Integer id, boolean type, Date date, String status, User user, Shop shop, Product product,
+			Set<PostingDetail> postings) {
 		super();
 		this.id = id;
 		this.type = type;
+		this.date = date;
+		this.status = status;
 		this.user = user;
 		this.shop = shop;
 		this.product = product;

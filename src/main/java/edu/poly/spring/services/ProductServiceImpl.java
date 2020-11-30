@@ -1,11 +1,13 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.poly.spring.models.Product;
+import edu.poly.spring.models.ProductType;
 import edu.poly.spring.repositories.ProductRepository;
 
 @Service
@@ -13,6 +15,11 @@ public class ProductServiceImpl implements ProductService{
 
 	@Autowired
 	ProductRepository productRepository;
+
+	@Override
+	public List<Product> findByProducttype(ProductType productType) {
+		return productRepository.findByProducttype(productType);
+	}
 
 	@Override
 	public Product findByName(String name) {

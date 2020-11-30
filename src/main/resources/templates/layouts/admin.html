@@ -9,17 +9,20 @@
     <link rel="icon" href="/images/choTroi.ico" type="image/x-icon" />
 
     <!-- Bootstrap CSS, JS, Font Awesome here-->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="/libs/font-awesome-pro-5.15.1/css/all.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.theme.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.transitions.min.css" />
     <link rel="stylesheet" href="/css/style.css">
 
     <script src="/libs/angular/angular.min.js"></script>
     <script src="/libs/angular-route/angular-route.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap.js"></script>
 
 </head>
 
@@ -38,13 +41,12 @@
                     <img src="/images/choTroi2.png" height="40">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
-                    <span class="navbar-toggler-icon"></span>
+                    <i class="fad fa-bars"></i>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive" ng-controller="posting">
                     <form ng-submit="search()" class="form-inline" method="post">
                         <div class="md-form">
-                            <input class="form-control form-search" type="text" ng-model="keyword" name="keyword"
-                                placeholder="Tìm kiếm..." required pattern="\S+.*">
+                            <input class="form-control form-search" type="text" ng-model="keyword" name="keyword" placeholder="Tìm kiếm..." required pattern="\S+.*">
                         </div>
                         <button class="btn btn-outline-light button-search" type="submit">
                             <i class="fa fa-search" aria-hidden="true"></i>
@@ -54,22 +56,18 @@
                         Đăng Tin
                     </button>
                     <div th:if="${userLogin} != null and ${shopLogin} == null">
-	                    <a class="btn btn-outline-light button-postting" th:href="@{/postingdetails/posting}" type="submit"
-                        th:if="${userLogin.status} == 'activated'">
+                        <a class="btn btn-outline-light button-postting" th:href="@{/postingdetails/posting}" type="submit" th:if="${userLogin.status} == 'activated'">
 	                        Đăng Tin
 	                    </a>
-                    	<button type="button" class="btn btn-outline-light button-postting" data-toggle="modal" 
-                    	data-target="#errorModal" th:if="${userLogin.status} != 'activated'">
+                        <button type="button" class="btn btn-outline-light button-postting" data-toggle="modal" data-target="#errorModal" th:if="${userLogin.status} != 'activated'">
 	                        Đăng Tin
 	                    </button>
                     </div>
                     <div th:if="${userLogin} == null and ${shopLogin} != null">
-                    	<a class="btn btn-outline-light button-postting" th:href="@{/postingdetails/posting}" type="submit"
-                        th:if="${shopLogin.status} == 'activated'">
+                        <a class="btn btn-outline-light button-postting" th:href="@{/postingdetails/posting}" type="submit" th:if="${shopLogin.status} == 'activated'">
 	                        Đăng Tin
 	                    </a>
-                    	<button type="button" class="btn btn-outline-light button-postting" data-toggle="modal" 
-                    	data-target="#errorModal" th:if="${shopLogin.status} != 'activated'">
+                        <button type="button" class="btn btn-outline-light button-postting" data-toggle="modal" data-target="#errorModal" th:if="${shopLogin.status} != 'activated'">
 	                        Đăng Tin5
 	                    </button>
                     </div>
@@ -101,8 +99,7 @@
                         </li>
                         <li class="nav-item dropdown" th:if="${shopLogin} != null">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown">
-                                <i class="fa fa-user"></i> <span class="title-navbar"
-                                    th:text="${shopLogin.Shopname} ?: 'Tài khoản'"></span>
+                                <i class="fa fa-user"></i> <span class="title-navbar" th:text="${shopLogin.Shopname} ?: 'Tài khoản'"></span>
                             </a>
                             <div class="dropdown-menu nav-dropdown-menu">
                                 <a class="dropdown-item" th:href="@{'/shops/profile/' + ${shopLogin.Id}}">Xem Tài
@@ -113,8 +110,7 @@
                         </li>
                         <li class="nav-item dropdown" th:if="${userLogin} != null">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown">
-                                <i class="fa fa-user"></i> <span class="title-navbar"
-                                    th:text="${userLogin.fullname} ?: 'Tài khoản'"></span>
+                                <i class="fa fa-user"></i> <span class="title-navbar" th:text="${userLogin.fullname} ?: 'Tài khoản'"></span>
                             </a>
                             <div class="dropdown-menu nav-dropdown-menu">
                                 <a class="dropdown-item" th:href="@{'/users/profile/' + ${userLogin.Id}}">Xem Tài
@@ -151,9 +147,8 @@
                     <h5>Chợ Trời - mua bán đồ cũ</h5>
                     <hr class="light">
                     <h6 class="text-uppercase mb-4 font-weight-bold"></h6>
-                    <p>Web thương mại điện tử để người mua người bán có thể mua
-                        hoặc bán đồ cũ một cách dễ dàng. Kết nối người mua và người bán cả
-                        nước.</p>
+                    <p>Web thương mại điện tử để người mua người bán có thể mua hoặc bán đồ cũ một cách dễ dàng. Kết nối người mua và người bán cả nước.
+                    </p>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <hr class="light">
@@ -220,34 +215,31 @@
     </footer>
     <!-- footer -->
 
-    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
-        aria-hidden="true" data-backdrop="true">
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" data-backdrop="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title text-danger m-auto" id="exampleModalLabel">
-                        <i class="fad fa-exclamation-square"></i> Vui lòng đăng nhập để sử dụng chức
-                        năng này!
+                        <i class="fad fa-exclamation-square"></i> Vui lòng đăng nhập để sử dụng chức năng này!
                     </h5>
                 </div>
-                
+
             </div>
         </div>
     </div>
 
     <!-- Scroll to top -->
     <script type="text/javascript">
-
         var mybutton = document.getElementById("button-scroll");
 
         // When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function () {
+        window.onscroll = function() {
             scrollFunction()
         };
 
         function scrollFunction() {
-            if (document.body.scrollTop > 20
-                || document.documentElement.scrollTop > 20) {
+            if (document.body.scrollTop > 20 ||
+                document.documentElement.scrollTop > 20) {
                 mybutton.style.display = "block";
             } else {
                 mybutton.style.display = "none";
@@ -256,7 +248,10 @@
 
         // When the user clicks on the button, scroll to the top of the document
         function topFunction() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
         // Click change user for Login
@@ -286,31 +281,28 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-2.5.0.js"></script>
+    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-tpls-2.5.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
+
     <!-- js in rate -->
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             /* 1. Visualizing things on Hover - See next part for action on click */
-            $('#stars li').on('mouseover', function () {
+            $('#stars li').on('mouseover', function() {
                 var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
 
                 // Now highlight all the stars that's not after the current hovered star
-                $(this).parent().children('li.star').each(function (e) {
+                $(this).parent().children('li.star').each(function(e) {
                     if (e < onStar) {
                         $(this).addClass('hover');
                     } else {
@@ -318,15 +310,15 @@
                     }
                 });
 
-            }).on('mouseout', function () {
-                $(this).parent().children('li.star').each(function (e) {
+            }).on('mouseout', function() {
+                $(this).parent().children('li.star').each(function(e) {
                     $(this).removeClass('hover');
                 });
             });
 
 
             /* 2. Action to perform on click */
-            $('#stars li').on('click', function () {
+            $('#stars li').on('click', function() {
                 var onStar = parseInt($(this).data('value'), 10); // The star currently selected
                 var stars = $(this).parent().children('li.star');
 
@@ -377,52 +369,6 @@
             document.getElementById("point").value = point;
         }
     </script>
-
-	<!-- js in carousel -->
-	<script>
-        $(document).ready(function () {
-
-
-            if ($('.bbb_viewed_slider').length) {
-                var viewedSlider = $('.bbb_viewed_slider');
-
-                viewedSlider.owlCarousel(
-                    {
-                        loop: true,
-                        margin: 30,
-                        autoplay: true,
-                        autoplayTimeout: 6000,
-                        nav: false,
-                        dots: false,
-                        responsive:
-                        {
-                            0: { items: 1 },
-                            575: { items: 2 },
-                            768: { items: 3 },
-                            991: { items: 4 },
-                            1199: { items: 6 }
-                        }
-                    });
-
-                if ($('.bbb_viewed_prev').length) {
-                    var prev = $('.bbb_viewed_prev');
-                    prev.on('click', function () {
-                        viewedSlider.trigger('prev.owl.carousel');
-                    });
-                }
-
-                if ($('.bbb_viewed_next').length) {
-                    var next = $('.bbb_viewed_next');
-                    next.on('click', function () {
-                        viewedSlider.trigger('next.owl.carousel');
-                    });
-                }
-            }
-
-
-        });
-    </script>
-
 
 </body>
 

@@ -1,5 +1,6 @@
 package edu.poly.spring.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,12 +8,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.poly.spring.models.Posting;
+import edu.poly.spring.models.Shop;
+import edu.poly.spring.models.User;
 import edu.poly.spring.repositories.PostingRepository;
 
 @Service
 public class PostingServiceImpl implements PostingService {
 	@Autowired
 	private PostingRepository postingRepository;
+
+	@Override
+	public List<Posting> findTop16ByOrderByDateDesc() {
+		return postingRepository.findTop16ByOrderByDateDesc();
+	}
+
+	@Override
+	public List<Posting> findByUser(User user) {
+		return postingRepository.findByUser(user);
+	}
+
+	@Override
+	public List<Posting> findByShop(Shop shop) {
+		return postingRepository.findByShop(shop);
+	}
 
 	@Override
 	public List<Posting> findPostingsByProductId(Integer id) {

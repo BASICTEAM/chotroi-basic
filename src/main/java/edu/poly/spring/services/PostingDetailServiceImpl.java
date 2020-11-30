@@ -13,10 +13,17 @@ import edu.poly.spring.repositories.PostingRepository;
 
 @Service
 public class PostingDetailServiceImpl implements PostingDetailService {
+	
 	@Autowired
 	PostingDetailRepository postingDetailRepository;
+	
 	@Autowired
 	PostingRepository postingRepository;
+
+	@Override
+	public PostingDetail findPostingDetailByPostingId(Integer id) {
+		return postingDetailRepository.findPostingDetailByPostingId(id);
+	}
 
 	@Override
 	public List<PostingDetail> findPostingDetailByTitleContaining(String tile) {
