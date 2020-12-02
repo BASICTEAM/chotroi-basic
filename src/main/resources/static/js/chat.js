@@ -90,12 +90,14 @@ function onMessageReceived(payload) {
         messageElement.classList.add('chat-message');
 
         var avatarElement = document.createElement('i');
-        var avatarText = document.createTextNode(message.sender[0]);
-        avatarElement.appendChild(avatarText);
-        avatarElement.style['background-color'] = getAvatarColor(message.sender);
+        var avatarElement2 = document.createElement('img');
+        var id = document.querySelector('#id12').value.trim();
+   //     var avatarText = document.createTextNode(message.sender[0]);
+     //   avatarElement.appendChild(avatarText);
+        avatarElement2.src = /getimage/+id;
 
+        avatarElement.appendChild(avatarElement2);
         messageElement.appendChild(avatarElement);
-
         var usernameElement = document.createElement('span');
         var usernameText = document.createTextNode(message.sender);
         usernameElement.appendChild(usernameText);

@@ -6,6 +6,8 @@
 }
 
 
+
+
 body:before {
     height: 50%;
     width: 100%;
@@ -203,7 +205,6 @@ button.accent {
     line-height: 42px;
     color: #fff;
     text-align: center;
-    border-radius: 50%!important;
     font-style: normal;
     text-transform: uppercase;
 }

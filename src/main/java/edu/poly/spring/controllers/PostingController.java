@@ -82,7 +82,8 @@ public class PostingController {
 
 	static int idshop;
 	static int iduser;
-	static String sender = "";
+	static String type;
+	static String sender="";
 	public String image1 = "";
 	public String image2 = "";
 	public String image3 = "";
@@ -572,159 +573,331 @@ public class PostingController {
 		return "postings/profile";
 	}
 
-	@GetMapping("/chat/{id}")
-	public String chat(ModelMap model, @PathVariable(name = "id") Integer id) {
-		
+	@GetMapping("/chatuser/{id}")
+	public String chatuser(ModelMap model,@PathVariable(name ="id")  Integer id) {
+		String mes = null,userc = null,shopc = null;
 		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
 			model.addAttribute("userLoginDTO", new UserLoginDTO());
 			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
 			return "logins/login";
 		}
 
-		if (UserLogin.ROLE_USER.equals("user")) {
-			User user = UserLogin.USER;
-			iduser = user.getId();
-			model.addAttribute("user", user);
-			model.addAttribute("userLogin", user);
-			model.addAttribute("shopLogin", null);
+		// User chat voi User
+				if (UserLogin.ROLE_USER.equals("user")) {
+					User user = UserLogin.USER;
+					iduser = user.getId();
+					model.addAttribute("user", user);
+					model.addAttribute("userLogin", user);
+					model.addAttribute("shopLogin", null);
+					
+					Optional<User>optUser =	userService.findById(id);
+					if(optUser.isPresent()) {
+						model.addAttribute("shop", optUser.get());
+						idshop = id;
+					} else {
+						return "postings/postingDetails";
+					}
+					Optional<User>optUser2 =	userService.findById(iduser);
+					if(optUser2.isPresent()) {
+						model.addAttribute("user", optUser2.get());
+						sender = optUser2.get().getFullname();
+					} else {
+						return "postings/postingDetails";
+					}
+					Session session1 = entityManagerFactory
+							.createEntityManager()
+							.unwrap(Session.class);
+							Query query1 = session1.createSQLQuery(
+									"	select time, message \r\n" + 
+											"	from chatboxs  \r\n" +  
+											"	where chatboxs.iduser="+iduser +" and chatboxs.iduser2="+id +" or chatboxs.iduser="+id +"and chatboxs.iduser2="+iduser );
+				
+							userc="uvsu";
+							List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+							for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+							Object[] records1 = (Object[]) iterator1.next();
+							System.out.println("=======" +records1[0]);
+							System.out.println("=======" +records1[1]);
 
-			Optional<User> optUser = userService.findById(iduser);
-			if (optUser.isPresent()) {
-				model.addAttribute("user", optUser.get());
-				sender = optUser.get().getFullname();
-			} else {
-				return "postings/postingDetails";
-			}
-			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
-					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
-					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where shops.id=" + id
-					+ " and users.id=" + iduser);
+							}
+							
+							Session session = entityManagerFactory
+									.createEntityManager()
+									.unwrap(Session.class);
+									Query query= session.createSQLQuery(
+								"select distinct chat.iduser,chat.idshop,shop.shopname \r\n" + 
+										"	from chatboxs chat \r\n" + 
+										"	join shops shop on shop.id = chat.idshop \r\n" + 
+										"					 where chat.iduser ="+iduser );
+									List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+									for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+									Object[] records = (Object[]) iterator.next();
 
-			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
-			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
-				Object[] records1 = (Object[]) iterator1.next();
-				System.out.println("=======" + records1[0]);
-				System.out.println("=======" + records1[1]);
+									}
+									Session session2 = entityManagerFactory
+											.createEntityManager()
+											.unwrap(Session.class);
+											Query query2= session2.createSQLQuery(
+										"select distinct chat.iduser,chat.iduser2,us.fullname \r\n" + 
+												"	from chatboxs chat \r\n" + 
+												"	join users us on us.id = chat.iduser2 \r\n" + 
+												"					 where chat.iduser ="+iduser );
+											List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+											for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+											Object[] records2 = (Object[]) iterator2.next();
 
-			}
-
-			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query = session.createSQLQuery("	select distinct chat.iduser,chat.idshop,shop.shopname \r\n"
-					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
-					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.iduser =" + iduser);
-			List<Object[]> list = ((org.hibernate.query.Query) query).list();
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				Object[] records = (Object[]) iterator.next();
-				System.out.println("=======" + records[0]);
-				System.out.println("=======" + records[1]);
-
-			}
-			model.addAttribute("arrays", list1);
-			model.addAttribute("arrays1", list);
-			model.addAttribute("chatbox", new ChatBox());
-		}
-
+											}
+									model.addAttribute("arrays", list1);	
+									model.addAttribute("listchatshop", listchatshop);
+									model.addAttribute("listchatuser", listchatuser);
+									model.addAttribute("mes",mes);
+									model.addAttribute("userc",userc);
+									model.addAttribute("shopc",shopc);
+									type = "uservsuser";
+									model.addAttribute("chatbox",new ChatBox());
+									return "homes/chat";
+				}
+//      Shop chat voi User
 		if (UserLogin.ROLE_USER.equals("shop")) {
 			Shop shop = UserLogin.SHOP;
 			iduser = shop.getId();
 			model.addAttribute("user", shop);
 			model.addAttribute("userLogin", null);
 			model.addAttribute("shopLogin", shop);
-
-			Optional<Shop> optShop = shopService.findById(iduser);
-			if (optShop.isPresent()) {
+		
+			Optional<User>optUser =	userService.findById(id);
+			if(optUser.isPresent()) {
+				model.addAttribute("user", optUser.get());
+				idshop = id;
+			} else {
+				return "postings/postingDetails";
+			}
+			Optional<Shop>optShop =	shopService.findById(iduser);
+			if(optShop.isPresent()) {
 				model.addAttribute("shop", optShop.get());
 				sender = optShop.get().getShopname();
 			} else {
 				return "postings/postingDetails";
 			}
-			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
-					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
-					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where users.id=" + id
-					+ " and shops.id=" + iduser);
+			Session session1 = entityManagerFactory
+					.createEntityManager()
+					.unwrap(Session.class);
+					Query query1 = session1.createSQLQuery(
+				"	SELECT chatboxs.time , chatboxs.message \r\n" + 
+						"	FROM     chatboxs INNER JOIN \r\n" + 
+						"	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n" + 
+						"	users ON chatboxs.iduser = users.id \r\n" + 
+						"					 where users.id="+id + " and shops.id="+iduser );
+		
+					mes="khac";
+					List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+					for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+					Object[] records1 = (Object[]) iterator1.next();
+					System.out.println("=======" +records1[0]);
+					System.out.println("=======" +records1[1]);
 
-			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
-			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
-				Object[] records1 = (Object[]) iterator1.next();
-				System.out.println("=======" + records1[0]);
-				System.out.println("=======" + records1[1]);
+					}
+					
+					Session session = entityManagerFactory
+							.createEntityManager()
+							.unwrap(Session.class);
+							Query query= session.createSQLQuery(
+							"select distinct chat.idshop,chat.idshop2,shop.shopname \r\n" + 
+								"	from chatboxs chat \r\n" + 
+								"	join shops shop on shop.id = chat.idshop2 \r\n" + 
+								"					 where chat.idshop ="+iduser );
+							List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+							for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+							Object[] records = (Object[]) iterator.next();
 
-			}
+							}
+							Session session2 = entityManagerFactory
+									.createEntityManager()
+									.unwrap(Session.class);
+									Query query2= session2.createSQLQuery(
+								"select distinct chat.idshop,chat.iduser,us.fullname \r\n" + 
+										"	from chatboxs chat \r\n" + 
+										"	join users us on us.id = chat.iduser \r\n" + 
+										"					 where chat.idshop ="+iduser );
+									List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+									for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+									Object[] records2 = (Object[]) iterator2.next();
 
-			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query = session.createSQLQuery("	select distinct chat.idshop,chat.iduser,us.fullname \r\n"
-					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
-					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.idshop =" + iduser);
-			List<Object[]> list = ((org.hibernate.query.Query) query).list();
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				Object[] records = (Object[]) iterator.next();
-				System.out.println("=======" + records[0]);
-				System.out.println("=======" + records[1]);
-
-			}
-			model.addAttribute("arrays", list1);
-			model.addAttribute("arrays1", list);
-			model.addAttribute("chatbox", new ChatBox());
+									}
+							
+							model.addAttribute("arrays", list1);	
+							model.addAttribute("listchatshop", listchatshop);
+							model.addAttribute("listchatuser", listchatuser);
+							model.addAttribute("mes", mes);
+							model.addAttribute("userc",userc);
+							model.addAttribute("shopc",shopc);
+							type = "shopvsuser";
+							model.addAttribute("chatbox",new ChatBox());	
 		}
 
 		return "homes/chat";
 	}
-
-	@PostMapping("/savechat")
-	public String savechat(ModelMap model, ChatBox chatbox) {
+	
+	@GetMapping("/chatshop/{id}")
+	public String chatshop(ModelMap model,@PathVariable(name ="id")  Integer id) {
+		String mes = null, shopc=null,userc=null;
 		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
 			model.addAttribute("userLoginDTO", new UserLoginDTO());
 			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
 			return "logins/login";
+		}	
+	
+//  User chat voi Shop
+if (UserLogin.ROLE_USER.equals("user")) {
+User user = UserLogin.USER;
+iduser = user.getId();
+model.addAttribute("user", user);
+model.addAttribute("userLogin", user);
+model.addAttribute("shopLogin", null);
+
+Optional<Shop>optShop =	shopService.findById(id);
+if(optShop.isPresent()) {
+model.addAttribute("shop", optShop.get());
+idshop = id;
+} else {
+return "postings/postingDetails";
+}
+Optional<User>optUser =	userService.findById(iduser);
+if(optUser.isPresent()) {
+model.addAttribute("user", optUser.get());
+sender = optUser.get().getFullname();
+} else {
+return "postings/postingDetails";
+}
+Session session1 = entityManagerFactory
+.createEntityManager()
+.unwrap(Session.class);
+Query query1 = session1.createSQLQuery(
+"	SELECT chatboxs.time , chatboxs.message \r\n" + 
+"	FROM     chatboxs INNER JOIN \r\n" + 
+"	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n" + 
+"	users ON chatboxs.iduser = users.id \r\n" + 
+"					 where shops.id="+id + " and users.id="+iduser );
+
+mes="khac";
+List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+Object[] records1 = (Object[]) iterator1.next();
+System.out.println("=======" +records1[0]);
+System.out.println("=======" +records1[1]);
+
+}
+
+Session session = entityManagerFactory
+.createEntityManager()
+.unwrap(Session.class);
+Query query= session.createSQLQuery(
+"select distinct chat.iduser,chat.idshop,shop.shopname \r\n" + 
+	"	from chatboxs chat \r\n" + 
+	"	join shops shop on shop.id = chat.idshop \r\n" + 
+	"					 where chat.iduser ="+iduser );
+List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+Object[] records = (Object[]) iterator.next();
+
+}
+Session session2 = entityManagerFactory
+		.createEntityManager()
+		.unwrap(Session.class);
+		Query query2= session2.createSQLQuery(
+	"select distinct chat.iduser,chat.iduser2,us.fullname \r\n" + 
+			"	from chatboxs chat \r\n" + 
+			"	join users us on us.id = chat.iduser2 \r\n" + 
+			"					 where chat.iduser ="+iduser );
+		List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+		for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+		Object[] records2 = (Object[]) iterator2.next();
+
 		}
-
-		if (UserLogin.ROLE_USER.equals("user")) {
-			User user = UserLogin.USER;
-			iduser = user.getId();
-			model.addAttribute("user", user);
-			model.addAttribute("userLogin", user);
-			model.addAttribute("shopLogin", null);
-			
-			if (chatbox.getId() != null && chatbox.getId() > 0) {
-			}
-			
-			Shop shop = new Shop();
-			shop.setId(idshop);
-			chatbox.setShop(shop);
-			User user1 = new User();
-			user1.setId(iduser);
-			chatbox.setUser(user1);
-			chatbox.setTime(sender);
-			chatBoxService.save(chatbox);
-			model.addAttribute(chatbox);
-			System.out.println(chatbox.getMessage());
-
+	model.addAttribute("arrays", list1);	
+	model.addAttribute("listchatshop", listchatshop);
+	model.addAttribute("listchatuser", listchatuser);
+	model.addAttribute("mes",mes);
+	model.addAttribute("userc",userc);
+	model.addAttribute("shopc",shopc);
+	type = "uservsshop";
+	model.addAttribute("chatbox",new ChatBox());	
+}
+//                  Shop chat vs Shop
+	if (UserLogin.ROLE_USER.equals("shop")) {
+		Shop shop = UserLogin.SHOP;
+		iduser = shop.getId();
+		model.addAttribute("user", shop);
+		model.addAttribute("userLogin", null);
+		model.addAttribute("shopLogin", shop);
+	
+		Optional<Shop>optShop =	shopService.findById(id);
+		if(optShop.isPresent()) {
+			model.addAttribute("user", optShop.get());
+			idshop = id;
+		} else {
+			return "postings/postingDetails";
 		}
-
-		if (UserLogin.ROLE_USER.equals("shop")) {
-			Shop shop = UserLogin.SHOP;
-			iduser = shop.getId();
-			model.addAttribute("user", shop);
-			model.addAttribute("userLogin", null);
-			model.addAttribute("shopLogin", shop);
-			if (chatbox.getId() != null && chatbox.getId() > 0) {
-			}
-			Shop shop1 = new Shop();
-			shop1.setId(iduser);
-			chatbox.setShop(shop1);
-			User user = new User();
-			user.setId(idshop);
-			chatbox.setUser(user);
-			chatbox.setTime(sender);
-			chatBoxService.save(chatbox);
-			model.addAttribute(chatbox);
-			System.out.println(chatbox.getMessage());
-
+		Optional<Shop>optShop1 =	shopService.findById(iduser);
+		if(optShop1.isPresent()) {
+			model.addAttribute("shop", optShop1.get());
+			sender = optShop1.get().getShopname();
+		} else {
+			return "postings/postingDetails";
 		}
+		Session session1 = entityManagerFactory
+				.createEntityManager()
+				.unwrap(Session.class);
+				Query query1 = session1.createSQLQuery(
+			"	select time, message \r\n" + 
+					"	from chatboxs  \r\n" +  
+					"	where chatboxs.idshop="+iduser +" and chatboxs.idshop2="+id +" or chatboxs.idshop="+id +"and chatboxs.idshop2="+iduser);
+	
+				shopc="svss";
+				List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+				for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" +records1[0]);
+				System.out.println("=======" +records1[1]);
 
-		return "homes/chat";
+				}
+				
+				Session session = entityManagerFactory
+						.createEntityManager()
+						.unwrap(Session.class);
+						Query query= session.createSQLQuery(
+						"select distinct chat.idshop,chat.idshop2,shop.shopname \r\n" + 
+							"	from chatboxs chat \r\n" + 
+							"	join shops shop on shop.id = chat.idshop2 \r\n" + 
+							"					 where chat.idshop ="+iduser );
+						List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+						for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+						Object[] records = (Object[]) iterator.next();
+
+						}
+						Session session2 = entityManagerFactory
+								.createEntityManager()
+								.unwrap(Session.class);
+								Query query2= session2.createSQLQuery(
+							"select distinct chat.idshop,chat.iduser,us.fullname \r\n" + 
+									"	from chatboxs chat \r\n" + 
+									"	join users us on us.id = chat.iduser \r\n" + 
+									"					 where chat.idshop ="+iduser );
+								List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+								for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+								Object[] records2 = (Object[]) iterator2.next();
+
+								}
+						model.addAttribute("arrays", list1);	
+						model.addAttribute("listchatshop", listchatshop);
+						model.addAttribute("listchatuser", listchatuser);
+						model.addAttribute("mes",mes);
+						model.addAttribute("userc",userc);
+						model.addAttribute("shopc",shopc);
+						model.addAttribute("chatbox",new ChatBox());	
+						type = "shopvsshop";
+						return "homes/chat";
 	}
-
+	return "homes/chat";
+	}
 }
