@@ -8,22 +8,22 @@
 
     <div class="container-fluid row mt-3 justify-content-center profile-content" layout:fragment="content">
         <div class="col-12 text-center">
-            <h4 class="text-uppercase">Tài Khoản Của Tôi</h4>
-            <h6>Quản lý thông tin tài khoản của bạn. Bạn không nên tiết lộ thông tin để đảm bảo an toàn!</h6>
+            <h4 class="text-uppercase">TÃ i Khoáº£n Cá»§a TÃ´i</h4>
+            <h6>Quáº£n lÃ½ thÃ´ng tin tÃ i khoáº£n cá»§a báº¡n. Báº¡n khÃ´ng nÃªn tiáº¿t lá»™ thÃ´ng tin Ä‘á»ƒ Ä‘áº£m báº£o an toÃ n!</h6>
             <hr>
         </div>
         <div class="col-lg-3 col-md-3 profile-content-left">
             <div th:each="item : ${user}" class="profile-content-left-category">
-                <span> <i class="fa fa-user-circle" aria-hidden="true"></i> Tài khoản của
-                    tôi</span>
-                <li><a th:href="@{'/shops/profile/' + ${item.Id}}" class="text-danger">Hồ sơ</a></li>
-                <li><a th:href="@{'/chat/'+2}" class="text-danger">Trò chuyện</a></li>
-                <li><a th:href="@{'/shops/change-password/'+ ${item.Id}}">Đổi mật khẩu</a></li>
-                <li><a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"> Quên mật khẩu </a>
+                <span> <i class="fa fa-user-circle" aria-hidden="true"></i> TÃ i khoáº£n cá»§a
+                    tÃ´i</span>
+                <li><a th:href="@{'/shops/profile/' + ${item.Id}}" class="text-danger">Há»“ sÆ¡</a></li>
+                <li><a th:href="@{'/chatshop/'+ ${item.Id}}" class="text-danger">TrÃ² chuyá»‡n</a></li>
+                <li><a th:href="@{'/shops/change-password/'+ ${item.Id}}">Ä�á»•i máº­t kháº©u</a></li>
+                <li><a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"> QuÃªn máº­t kháº©u </a>
                     <div class="collapse" id="collapseExample">
                         <div class="card card-body">
-                            <span>Tài khoản của bạn sẽ bị đăng xuất, nếu muốn tiếp tục
-                                <a th:href="@{/forgot-password}" class="text-primary">nhấn vào đây</a>.
+                            <span>TÃ i khoáº£n cá»§a báº¡n sáº½ bá»‹ Ä‘Äƒng xuáº¥t, náº¿u muá»‘n tiáº¿p tá»¥c
+                                <a th:href="@{/forgot-password}" class="text-primary">nháº¥n vÃ o Ä‘Ã¢y</a>.
                             </span>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                 </li>
             </div>
             <div th:object=${editshopDto} enctype="multipart/form-data">
-                <label for="image">Ảnh đại diện:</label> <br>
+                <label for="image">áº¢nh Ä‘áº¡i diá»‡n:</label> <br>
                 <img class="profile-content-left-avatar" th:src="@{'/getimage/' + *{id}}" th:alt="*{image}" />
 
             </div>
@@ -42,32 +42,32 @@
                     <h5 th:text="${message}" class="alert alert-success text-center"></h5>
                 </div>
                 <div class="form-group">
-                    <label for="image">Chọn ảnh:</label>
+                    <label for="image">Chá»�n áº£nh:</label>
                     <input type="file" th:field="*{image}" />
                 </div>
                 <div class="form-group">
-                    <label for="username">Tên đăng nhập:</label> <input readonly type="text" class="form-control" th:field="*{username}" name="username" id="username" aria-describedby="helpId" placeholder="Tên đăng nhập">
+                    <label for="username">TÃªn Ä‘Äƒng nháº­p:</label> <input readonly type="text" class="form-control" th:field="*{username}" name="username" id="username" aria-describedby="helpId" placeholder="TÃªn Ä‘Äƒng nháº­p">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email:</label> <input type="email" class="form-control" th:field="*{email}" name="email" id="email" aria-describedby="helpId" placeholder="Email">
                 </div>
                 <div class="form-group">
-                    <label for="phone">Số điện thoại:</label> <input type="text" class="form-control" th:field="*{phone}" name="phone" id="phone" aria-describedby="helpId" placeholder="Số điện thoại">
+                    <label for="phone">Sá»‘ Ä‘iá»‡n thoáº¡i:</label> <input type="text" class="form-control" th:field="*{phone}" name="phone" id="phone" aria-describedby="helpId" placeholder="Sá»‘ Ä‘iá»‡n thoáº¡i">
                 </div>
                 <div class="form-group">
-                    <label for="shop">Tên đại lý:</label> <input type="text" class="form-control" th:field="*{Shopname}" name="shop" id="shop" aria-describedby="helpId" placeholder="Tên đại lý">
+                    <label for="shop">TÃªn Ä‘áº¡i lÃ½:</label> <input type="text" class="form-control" th:field="*{Shopname}" name="shop" id="shop" aria-describedby="helpId" placeholder="TÃªn Ä‘áº¡i lÃ½">
                 </div>
                 <div class="form-group">
-                    <label for="address">Địa chỉ:</label>
-                    <textarea class="form-control" rows="3" th:field="*{address}" name="address" id="address" aria-describedby="helpId" placeholder="Địa chỉ"></textarea>
+                    <label for="address">Ä�á»‹a chá»‰:</label>
+                    <textarea class="form-control" rows="3" th:field="*{address}" name="address" id="address" aria-describedby="helpId" placeholder="Ä�á»‹a chá»‰"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="information">Thông tin:</label>
-                    <textarea class="form-control" rows="3" th:field="*{information}" name="information" id="information" aria-describedby="helpId" placeholder="Thông tin"></textarea>
+                    <label for="information">ThÃ´ng tin:</label>
+                    <textarea class="form-control" rows="3" th:field="*{information}" name="information" id="information" aria-describedby="helpId" placeholder="ThÃ´ng tin"></textarea>
                 </div>
                 <div class="form-group text-right mt-4">
-                    <button class="btn btn-outline-warning button-profile">Cập nhật</button>
+                    <button class="btn btn-outline-warning button-profile">Cáº­p nháº­t</button>
                 </div>
             </form>
         </div>
