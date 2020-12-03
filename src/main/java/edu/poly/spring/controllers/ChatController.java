@@ -70,7 +70,7 @@ public class ChatController {
 			}
 			
 			Shop shop2 = new Shop();
-			shop.setId(PostingController.iduser);
+			shop2.setId(PostingController.iduser);
 	chatbox.setShop(shop2);
 
 	User user = new User();
