@@ -55,6 +55,18 @@
                     </a>
 
 </li>
+	<li th:each="a : ${listchatuser2}">
+  <a  th:href="@{'/chatuser/' + ${a[1]}}">
+                        <i class="fad fa-comments-alt"></i> Chat voi <p th:text="${a[2]}"></p>
+                    </a>
+
+</li>
+	<li th:each="a : ${listchatshop2}">
+  <a  th:href="@{'/chatshop/' + ${a[1]}}">
+                        <i class="fad fa-comments-alt"></i> Chat voi <p th:text="${a[2]}"></p>
+                    </a>
+
+</li>
 <hr>
 			</ul>
                

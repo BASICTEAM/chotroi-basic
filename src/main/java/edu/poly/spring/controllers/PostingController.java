@@ -647,9 +647,23 @@ public class PostingController {
 											Object[] records2 = (Object[]) iterator2.next();
 
 											}
+											Session session3 = entityManagerFactory
+													.createEntityManager()
+													.unwrap(Session.class);
+													Query query3= session3.createSQLQuery(
+												"select distinct chat.iduser2,chat.iduser,us.fullname \r\n" + 
+														"	from chatboxs chat \r\n" + 
+														"	join users us on us.id = chat.iduser \r\n" + 
+														"					 where chat.iduser2 ="+iduser );
+													List<Object[]> listchatuser2 = ((org.hibernate.query.Query) query3).list();
+													for (Iterator iterator3 = listchatuser2.iterator(); iterator3.hasNext();) {
+													Object[] records2 = (Object[]) iterator3.next();
+
+													}
 									model.addAttribute("arrays", list1);	
 									model.addAttribute("listchatshop", listchatshop);
 									model.addAttribute("listchatuser", listchatuser);
+									model.addAttribute("listchatuser2", listchatuser2);
 									model.addAttribute("mes",mes);
 									model.addAttribute("userc",userc);
 									model.addAttribute("shopc",shopc);
@@ -875,6 +889,19 @@ Session session2 = entityManagerFactory
 						Object[] records = (Object[]) iterator.next();
 
 						}
+						Session session3 = entityManagerFactory
+								.createEntityManager()
+								.unwrap(Session.class);
+								Query query3= session3.createSQLQuery(
+								"select distinct chat.idshop2,chat.idshop,shop.shopname \r\n" + 
+									"	from chatboxs chat \r\n" + 
+									"	join shops shop on shop.id = chat.idshop \r\n" + 
+									"					 where chat.idshop2 ="+iduser );
+								List<Object[]> listchatshop2 = ((org.hibernate.query.Query) query3).list();
+								for (Iterator iterator3 = listchatshop2.iterator(); iterator3.hasNext();) {
+								Object[] records = (Object[]) iterator3.next();
+
+								}
 						Session session2 = entityManagerFactory
 								.createEntityManager()
 								.unwrap(Session.class);
@@ -890,6 +917,7 @@ Session session2 = entityManagerFactory
 								}
 						model.addAttribute("arrays", list1);	
 						model.addAttribute("listchatshop", listchatshop);
+						model.addAttribute("listchatshop2", listchatshop2);
 						model.addAttribute("listchatuser", listchatuser);
 						model.addAttribute("mes",mes);
 						model.addAttribute("userc",userc);
