@@ -58,9 +58,6 @@ public class PostingDetail {
 	@JsonIgnoreProperties(value = {"holidayDates"})
 	@JoinColumn(name = "postingId")
 	private Posting posting;
-	
-	@OneToMany(mappedBy = "postingdetail", cascade = CascadeType.ALL)
-	private Set<PostingSaved> postingsaveds;
 
 	public String getAddress() {
 		return address;
@@ -158,14 +155,6 @@ public class PostingDetail {
 		this.posting = posting;
 	}
 	
-	public Set<PostingSaved> getPostingsaveds() {
-		return postingsaveds;
-	}
-
-	public void setPostingsaveds(Set<PostingSaved> postingsaveds) {
-		this.postingsaveds = postingsaveds;
-	}
-	
 	public PostingDetail(Integer id, String title, String content, String picture1, String picture2, String picture3,
 			String picture4, double price, String manufacturer, String product_type, Posting posting,
 			Set<PostingSaved> postingsaveds) {
@@ -181,7 +170,6 @@ public class PostingDetail {
 		this.manufacturer = manufacturer;
 		this.product_type = product_type;
 		this.posting = posting;
-		this.postingsaveds = postingsaveds;
 	}
 
 	public PostingDetail() {

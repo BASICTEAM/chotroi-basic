@@ -104,11 +104,40 @@
                         <div class="col-sm-12 col-md-9 col-lg-9 d-flex align-items-center">
                             <span class="card-postingdetail-price">{{postingdetail.price | currency : "" : 0}} đ</span>
                         </div>
+                        <input type="text" value="" name="usernameLogin" th:if="${user} == null" style="display: none;">
+                        <input type="text" th:value="*{user.username}" name="usernameLogin" th:if="${user} != null" style="display: none;">
                         <div class="col-sm-12 col-md-3 col-lg-3">
                             <div class="card-postingdetail-button">
-                                <button>
-                                    <i class="fad fa-save"></i> Lưu tin
-                                </button>
+                                <div class="text-right filtered-product-button-save-posting" th:if="${user} == null">
+                                    <button type="button" class="btn" data-toggle="modal" data-target="#errorModal" ng-click="postingSave()" title="Lưu tin">
+                                        <i class="fal fa-heart-circle"></i>
+                                    </button>
+                                </div>
+                                <div th:if="${user} != null">
+                                    <form th:action="@{/savePost}" method="POST" class="product-button-save-posting" ng-if="checkButtonSave(postingdetail.id) != true">
+                                        <div style="display: none;">
+                                            <input type="text" value="{{postingdetail.id}}" th:name="postingDetailId">
+                                            <input type="text" value="{{url}}" th:name="url">
+                                        </div>
+                                        <button type="submit" class="btn" ng-click="postingSave()" title="Lưu tin">
+                                            <i class="fal fa-heart-circle"></i>
+                                        </button>
+                                    </form>
+                                    <div ng-repeat="ps in postingSaveds">
+                                        <form th:action="@{/delete}" method="POST" class="product-button-save-posting" ng-if="postingdetail.id == ps.postingID">
+                                            <div style="display: none;">
+                                                <input type="text" value="{{ps.id}}" th:name="postingSaveId">
+                                                <input type="text" value="{{url}}" th:name="url">
+                                            </div>
+                                            <button type="submit" class="btn" ng-click="postingSave()" title="Hủy lưu tin">
+                                                <i class="fad fa-heart-circle"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-postingdetail-button" th:each="ps : ${postingSaved}">
+                                <a th:if="${ps.assessor != null}" class="fas fa-save mr-2" th:href="@{'/delete/' + ${ps.id}}"> Đã lưu</a>
                             </div>
                         </div>
                     </div>
@@ -173,8 +202,13 @@
                         </div>
                     </div>
                     <div class="col-7">
-                        <div class="card-postingdetail-buttonicon">
-                            <a href="">
+                        <div class="card-postingdetail-buttonicon" ng-if="postingdetail.posting.user != null">
+                            <a ng-href="/{{postingdetail.posting.user.id}}/profile">
+                                <i class="fas fa-id-card"> Xem trang</i>
+                            </a>
+                        </div>
+                        <div class="card-postingdetail-buttonicon" ng-if="postingdetail.posting.shop != null">
+                            <a ng-href="/{{postingdetail.posting.shop.id}}/profile">
                                 <i class="fas fa-id-card"> Xem trang</i>
                             </a>
                         </div>
@@ -271,6 +305,7 @@
                                                             onchange="previewFile(this);"
                                                             style="cursor: pointer; display: none;" />
                                                     </label>
+                                                    <span class="text-muted font-italic">Hình ảnh kích thước dưới 1MB.</span>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -447,17 +482,6 @@
                         <i class="fad fa-phone"></i> Số điện thoại :
                         <strong>{{postingdetail.posting.shop.phone}}</strong>
                     </button>
-                </div>
-                <div class="row card-postingdetail-phone">
-                    <button type="button" data-toggle="modal" data-target="#errorModal" th:if="${user} == null">
-                        <i class="fad fa-comments-alt"></i> Chat với người bán
-                    </button>
-                    <a th:href="@{chat/{{postingdetail.posting.user.id}}}" th:if="${userLogin} != null and ${shopLogin} == null">
-                        <i class="fad fa-comments-alt"></i> Chat với người bán
-                    </a>
-                    <a th:href="@{chat/{{postingdetail.posting.shop.id}}}" th:if="${userLogin} == null and ${shopLogin} != null">
-                        <i class="fad fa-comments-alt"></i> Chat với người bán
-                    </a>
                 </div>
             </aside>
         </div>

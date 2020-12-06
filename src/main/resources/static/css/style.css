@@ -1618,8 +1618,24 @@ hr.light {
 
 .filtered-product-button-save-posting>button {
     position: absolute;
-    margin-top: -20px;
+    margin-top: -35px;
     margin-left: -20px;
+    font-size: 30px;
+    color: #dc3545;
+}
+
+.filtered-product-button-save-posting>button:hover {
+    color: #df1313;
+}
+
+.product-button-save-posting>button {
+    padding: 0px;
+    font-size: 30px;
+    color: #dc3545;
+}
+
+.product-button-save-posting>button:hover {
+    color: #df1313;
 }
 
 .btn-group-filter-choose {
@@ -1738,10 +1754,11 @@ aside {
 .card-postingdetail-buttonicon>a {
     background-color: #ffc13b;
     font-size: 11px;
-    padding: 5px;
-    width: 100px;
+    padding: 6px;
+    padding-left: 20px;
+    padding-right: 14px;
     border-radius: 10px !important;
-    border: 0;
+    border: 0
 }
 
 .card-postingdetail-buttonicon>a:hover {

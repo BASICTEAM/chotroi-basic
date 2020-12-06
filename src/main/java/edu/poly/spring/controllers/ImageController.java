@@ -320,7 +320,7 @@ public class ImageController {
 			return ResponseEntity.ok().contentLength(buffer2.length).contentType(MediaType.parseMediaType("image/png"))
 					.body(bsr2);
 		} catch (Exception e) {
-			log.info("Rate Image is null!");
+			log.info("Image is null!");
 		}
 
 		return ResponseEntity.badRequest().build();

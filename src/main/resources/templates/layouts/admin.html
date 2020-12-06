@@ -68,7 +68,7 @@
 	                        Đăng Tin
 	                    </a>
                         <button type="button" class="btn btn-outline-light button-postting" data-toggle="modal" data-target="#errorModal" th:if="${shopLogin.status} != 'activated'">
-	                        Đăng Tin5
+	                        Đăng Tin
 	                    </button>
                     </div>
                     <ul class="navbar-nav ml-auto">
@@ -120,8 +120,8 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fa fa-question-circle"></i> <span class="title-navbar">Trợ Giúp</span>
+                            <a class="nav-link" th:href="@{/help}">
+                                <i class="fa fa-question-circle"></i><span class="title-navbar">Trợ Giúp</span>
                             </a>
                         </li>
                     </ul>
@@ -222,153 +222,154 @@
                     <h5 class="modal-title text-danger m-auto" id="exampleModalLabel">
                         <i class="fad fa-exclamation-square"></i> Vui lòng đăng nhập để sử dụng chức năng này!
                     </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fal fa-times-square"></i>
+                      </button>
                 </div>
-
             </div>
         </div>
-    </div>
 
-    <!-- Scroll to top -->
-    <script type="text/javascript">
-        var mybutton = document.getElementById("button-scroll");
+        <!-- Scroll to top -->
+        <script type="text/javascript">
+            var mybutton = document.getElementById("button-scroll");
 
-        // When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function() {
-            scrollFunction()
-        };
+            // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function() {
+                scrollFunction()
+            };
 
-        function scrollFunction() {
-            if (document.body.scrollTop > 20 ||
-                document.documentElement.scrollTop > 20) {
-                mybutton.style.display = "block";
-            } else {
-                mybutton.style.display = "none";
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 ||
+                    document.documentElement.scrollTop > 20) {
+                    mybutton.style.display = "block";
+                } else {
+                    mybutton.style.display = "none";
+                }
             }
-        }
 
-        // When the user clicks on the button, scroll to the top of the document
-        function topFunction() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        // Click change user for Login
-        function openUser(evt, username) {
-            var i, x, tablinks;
-            x = document.getElementsByClassName("user");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             }
-            tablinks = document.getElementsByClassName("tablink");
-            for (i = 0; i < x.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(
-                    " w3-white", "");
+
+            // Click change user for Login
+            function openUser(evt, username) {
+                var i, x, tablinks;
+                x = document.getElementsByClassName("user");
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablink");
+                for (i = 0; i < x.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(
+                        " w3-white", "");
+                }
+                document.getElementById(username).style.display = "block";
+                evt.currentTarget.className += " w3-white";
             }
-            document.getElementById(username).style.display = "block";
-            evt.currentTarget.className += " w3-white";
-        }
-    </script>
+        </script>
 
-    <script src="/js/app.js"></script>
+        <script src="/js/app.js"></script>
 
-    <script src="/services/postingFactory.js"></script>
+        <script src="/services/postingFactory.js"></script>
 
-    <script src="/core/version/version.js"></script>
-    <script src="/core/version/version-directive.js"></script>
-    <script src="/core/version/interpolate-filter.js"></script>
+        <script src="/core/version/version.js"></script>
+        <script src="/core/version/version-directive.js"></script>
+        <script src="/core/version/interpolate-filter.js"></script>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-2.5.0.js"></script>
-    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-tpls-2.5.0.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-2.5.0.js"></script>
+        <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-tpls-2.5.0.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
 
-    <!-- js in rate -->
-    <script type="text/javascript">
-        $(document).ready(function() {
+        <!-- js in rate -->
+        <script type="text/javascript">
+            $(document).ready(function() {
 
-            /* 1. Visualizing things on Hover - See next part for action on click */
-            $('#stars li').on('mouseover', function() {
-                var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
+                /* 1. Visualizing things on Hover - See next part for action on click */
+                $('#stars li').on('mouseover', function() {
+                    var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
 
-                // Now highlight all the stars that's not after the current hovered star
-                $(this).parent().children('li.star').each(function(e) {
-                    if (e < onStar) {
-                        $(this).addClass('hover');
-                    } else {
+                    // Now highlight all the stars that's not after the current hovered star
+                    $(this).parent().children('li.star').each(function(e) {
+                        if (e < onStar) {
+                            $(this).addClass('hover');
+                        } else {
+                            $(this).removeClass('hover');
+                        }
+                    });
+
+                }).on('mouseout', function() {
+                    $(this).parent().children('li.star').each(function(e) {
                         $(this).removeClass('hover');
+                    });
+                });
+
+
+                /* 2. Action to perform on click */
+                $('#stars li').on('click', function() {
+                    var onStar = parseInt($(this).data('value'), 10); // The star currently selected
+                    var stars = $(this).parent().children('li.star');
+
+                    for (i = 0; i < stars.length; i++) {
+                        $(stars[i]).removeClass('selected');
                     }
+
+                    for (i = 0; i < onStar; i++) {
+                        $(stars[i]).addClass('selected');
+                    }
+
+                    // JUST RESPONSE (Not needed)
+                    var ratingValue = parseInt($('#stars li.selected').last().data('value'), 10);
+                    var msg = "";
+                    var point = "";
+                    if (ratingValue == 1) {
+                        msg = "Hãy cho chúng tôi biết vì sao đơn vị cung cấp này không tốt nhé";
+                        point = ratingValue;
+                    } else if (ratingValue == 2) {
+                        msg = "Hãy cho chúng tôi biết vì sao bạn không thích đơn vị cung cấp này nhé";
+                        point = ratingValue;
+                    } else if (ratingValue == 3) {
+                        msg = "Hãy cho chúng tôi biết đơn vị cung cấp này chưa thực sự tốt ở điểm nào nhé";
+                        point = ratingValue;
+                    } else if (ratingValue == 4) {
+                        msg = "Hãy cho chúng tôi biết vì sao bạn thích đơn vị cung cấp này nhé";
+                        point = ratingValue;
+                    } else if (ratingValue == 5) {
+                        msg = "Hãy cho chúng tôi biết bạn thích đơn vị cung cấp này ở những điểm gì nhé";
+                        point = ratingValue;
+                    }
+                    responseMessage(msg);
+                    responsePoint(point);
+
                 });
 
-            }).on('mouseout', function() {
-                $(this).parent().children('li.star').each(function(e) {
-                    $(this).removeClass('hover');
-                });
-            });
-
-
-            /* 2. Action to perform on click */
-            $('#stars li').on('click', function() {
-                var onStar = parseInt($(this).data('value'), 10); // The star currently selected
-                var stars = $(this).parent().children('li.star');
-
-                for (i = 0; i < stars.length; i++) {
-                    $(stars[i]).removeClass('selected');
-                }
-
-                for (i = 0; i < onStar; i++) {
-                    $(stars[i]).addClass('selected');
-                }
-
-                // JUST RESPONSE (Not needed)
-                var ratingValue = parseInt($('#stars li.selected').last().data('value'), 10);
-                var msg = "";
-                var point = "";
-                if (ratingValue == 1) {
-                    msg = "Hãy cho chúng tôi biết vì sao đơn vị cung cấp này không tốt nhé";
-                    point = ratingValue;
-                } else if (ratingValue == 2) {
-                    msg = "Hãy cho chúng tôi biết vì sao bạn không thích đơn vị cung cấp này nhé";
-                    point = ratingValue;
-                } else if (ratingValue == 3) {
-                    msg = "Hãy cho chúng tôi biết đơn vị cung cấp này chưa thực sự tốt ở điểm nào nhé";
-                    point = ratingValue;
-                } else if (ratingValue == 4) {
-                    msg = "Hãy cho chúng tôi biết vì sao bạn thích đơn vị cung cấp này nhé";
-                    point = ratingValue;
-                } else if (ratingValue == 5) {
-                    msg = "Hãy cho chúng tôi biết bạn thích đơn vị cung cấp này ở những điểm gì nhé";
-                    point = ratingValue;
-                }
-                responseMessage(msg);
-                responsePoint(point);
 
             });
 
+            function responseMessage(msg) {
+                // $('.success-box').fadeIn(200);
+                $('.text-message').html("<span>" + msg + "</span>");
+                document.getElementById("reason").placeholder = msg;
+            }
 
-        });
-
-        function responseMessage(msg) {
-            // $('.success-box').fadeIn(200);
-            $('.text-message').html("<span>" + msg + "</span>");
-            document.getElementById("reason").placeholder = msg;
-        }
-
-        function responsePoint(point) {
-            // $('.success-box').fadeIn(200);
-            document.getElementById("point").value = point;
-        }
-    </script>
+            function responsePoint(point) {
+                // $('.success-box').fadeIn(200);
+                document.getElementById("point").value = point;
+            }
+        </script>
 
 </body>
 

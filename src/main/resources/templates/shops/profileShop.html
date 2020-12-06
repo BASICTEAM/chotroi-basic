@@ -17,7 +17,7 @@
                 <span> <i class="fa fa-user-circle" aria-hidden="true"></i> Tài khoản của
                     tôi</span>
                 <li><a th:href="@{'/shops/profile/' + ${item.Id}}" class="text-danger">Hồ sơ</a></li>
-                <li><a th:href="@{'/chat/'+2}" class="text-danger">Trò chuyện</a></li>
+                <li><a th:href="@{'/chatshop/'+ ${item.Id}}" class="text-danger">Trò chuyện</a></li>
                 <li><a th:href="@{'/shops/change-password/'+ ${item.Id}}">Đổi mật khẩu</a></li>
                 <li><a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"> Quên mật khẩu </a>
                     <div class="collapse" id="collapseExample">
@@ -44,6 +44,7 @@
                 <div class="form-group">
                     <label for="image">Chọn ảnh:</label>
                     <input type="file" th:field="*{image}" />
+                    <span class="text-muted font-italic">Hình ảnh kích thước dưới 1MB.</span>
                 </div>
                 <div class="form-group">
                     <label for="username">Tên đăng nhập:</label> <input readonly type="text" class="form-control" th:field="*{username}" name="username" id="username" aria-describedby="helpId" placeholder="Tên đăng nhập">

@@ -5,7 +5,11 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
     var postingDetails = [];
     var products = [];
     var postings = [];
-    var locals = [];
+    var postingSaveds = [];
+
+    var quanHuyens = [];
+    var tinhs = [];
+    var xas = [];
 
     posFactory.getProducts = function() {
         var promise = $http
@@ -95,22 +99,65 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         return promise;
     };
 
-    posFactory.getLocals = function() {
+    posFactory.getQuanHuyen = function() {
         var promise = $http
-            .get("/js/local.json")
+            .get('/json/quan_huyen.json')
             .then((respone) => {
-                products = respone.data;
-                return products;
+                quanHuyens = respone.data;
+                return quanHuyens;
             })
             .catch((reason) => console.log(reason));
         return promise;
     };
+
+    posFactory.getTinh = function() {
+        var promise = $http
+            .get('/json/tinh_tp.json')
+            .then((respone) => {
+                tinhs = respone.data;
+                return tinhs;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getXa = function() {
+        var promise = $http
+            .get('/json/xa_phuong.json')
+            .then((respone) => {
+                xas = respone.data;
+                return xas;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getPostingSaved = function(postingSaved) {
+        var promise = $http
+            .get('/posting-saved/find-all')
+            .then((respone) => {
+                postingSaveds = respone.data;
+                return postingSaveds;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    }
 
     return posFactory;
 })
 
 .controller("posting", ["$scope", "$http", "$window", "posFactory",
     function($scope, $http, $window, posFactory) {
+
+        $scope.tinhs = [];
+        $scope.quanHuyens = [];
+        $scope.xas = [];
+
+        $scope.listQuanHuyen = [];
+        $scope.listXa = [];
+
+        $scope.indexQuan = '';
+        $scope.indexXa = '';
 
         $scope.list_product = [];
         $scope.error = false;
@@ -142,14 +189,97 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
             }
         };
 
+        posFactory.getTinh().then(
+            data => {
+                $scope.tinhs = data;
+            }, reason => {
+                console.log(reason);
+            }
+        );
+
+        posFactory.getQuanHuyen().then(
+            data => {
+                $scope.quanHuyens = data;
+            }, reason => {
+                console.log(reason);
+            }
+        );
+
+        posFactory.getXa().then(
+            data => {
+                $scope.xas = data;
+            }, reason => {
+                console.log(reason);
+            }
+        );
+
+        $scope.selectTinh = function() {
+
+            if ($scope.tinhSelect == null) {
+                $scope.indexQuan = '';
+                $scope.indexXa = '';
+                if ($scope.xaSelect != null) {
+                    $scope.xaSelect.name_with_type = '';
+                }
+                if ($scope.huyenSelect != null) {
+                    $scope.huyenSelect.name_with_type = '';
+                }
+            }
+
+            if ($scope.tinhSelect != null) {
+                $scope.indexQuan = $scope.tinhSelect.name;
+                $scope.listQuanHuyen = [];
+                for (const i in $scope.quanHuyens) {
+                    var parent_code = $scope.quanHuyens[i].parent_code;
+                    if (parent_code == $scope.tinhSelect.code) {
+                        $scope.listQuanHuyen.push($scope.quanHuyens[i]);
+                    }
+                }
+            }
+
+        };
+
+        $scope.selectHuyen = function() {
+
+            if ($scope.huyenSelect == null) {
+                $scope.indexXa = '';
+
+                if ($scope.xaSelect != null) {
+                    $scope.xaSelect.name_with_type = '';
+                }
+                if ($scope.huyenSelect != null) {
+                    $scope.huyenSelect.name_with_type = '';
+                }
+
+            }
+
+            if ($scope.huyenSelect != null) {
+                $scope.indexXa = $scope.huyenSelect.name;
+                $scope.listXa = [];
+                for (const i in $scope.xas) {
+                    var parent_code = $scope.xas[i].parent_code;
+                    if (parent_code == $scope.huyenSelect.code) {
+                        $scope.listXa.push($scope.xas[i]);
+                    }
+                }
+            }
+        };
+
     }
 ])
 
 .controller("postingDetails", ["$scope", "$http", "$window", "posFactory", "$uibModal",
     function($scope, $http, $window, posFactory) {
         $scope.list_postingDetals = [];
+        $scope.postingSaveds = [];
+
+        $scope.usernameLogin = document.getElementsByName("usernameLogin")[0].value;
+        $scope.setPostingSave = false;
+
         $scope.product = "Danh mục";
         $scope.keyword = "";
+
+        $scope.isDisabled = true;
 
         // Table & Pagination
         // PAGINATION
@@ -160,9 +290,7 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         var arr = url.split("/");
         var resultUrl = arr[3];
 
-        $scope.pageChanged = function() {
-            console.log($scope.currentPage);
-        };
+        $scope.url = resultUrl;
 
         if (resultUrl == "loai-danh-muc") {
             posFactory.getPostingDetailsByProductType(arr[4]).then(
@@ -188,6 +316,8 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
             posFactory.getPostingDetails(resultUrl).then(
                 data => {
                     $scope.list_postingDetals = data;
+
+                    console.log($scope.list_postingDetals);
                     $scope.keyword = resultUrl.substr(15);
                 }, reason => {
                     console.log(reason);
@@ -195,9 +325,37 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
             )
         }
 
+        posFactory.getPostingSaved().then(
+            data => {
+                $scope.postingSaveds = [];
+                for (const i in data) {
+                    if (data[i].assessor == $scope.usernameLogin) {
+                        $scope.postingSaveds.push(data[i]);
+                    }
+
+                }
+            }, reason => {
+                console.log(reason);
+            }
+        )
+
+        $scope.checkButtonSave = function(id) {
+            for (const i in $scope.postingSaveds) {
+                if ($scope.postingSaveds[i].postingID == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        $scope.postingSave = function() {
+            $scope.isDisabled = false;
+        }
+
         $scope.goPostingDetail = function(id) {
-            console.log('/' + id);
-            $window.location.href = "/" + id;
+            if ($scope.isDisabled === true) {
+                $window.location.href = "/" + id;
+            }
         }
 
     }
@@ -207,18 +365,20 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         function($scope, $http, $window, posFactory) {
             $scope.postingdetail = {};
             $scope.postings = [];
-            $scope.postingsByUser = []
+            $scope.postingsByUser = [];
+
+            $scope.usernameLogin = document.getElementsByName("usernameLogin")[0].value;
+            $scope.setPostingSave = false;
 
             var url = window.location.href;
             var arr = url.split("/");
             var resultUrl = arr[3];
+            $scope.url = resultUrl;
             var numsStr = resultUrl.replace(/[^0-9]/g, '');
 
             posFactory.getPostingDetail(numsStr).then(
                 data => {
                     $scope.postingdetail = data;
-                    // var text_element = angular.element(document.querySelector('#delhi'));
-                    // text_element.html('<img id="zoom_03" src="/getimage1/' + $scope.postingdetail.id + '" data-zoom-image="/getimage1/3" width="410" />');
                     console.log($scope.postingdetail.posting.product.id);
                     $scope.getPostings($scope.postingdetail.posting.product.id);
                     if ($scope.postingdetail.posting.user != null) {
@@ -234,6 +394,29 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                     console.log(reason);
                 }
             )
+
+            posFactory.getPostingSaved().then(
+                data => {
+                    $scope.postingSaveds = [];
+                    for (const i in data) {
+                        if (data[i].assessor == $scope.usernameLogin) {
+                            $scope.postingSaveds.push(data[i]);
+                        }
+
+                    }
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            $scope.checkButtonSave = function(id) {
+                for (const i in $scope.postingSaveds) {
+                    if ($scope.postingSaveds[i].postingID == id) {
+                        return true;
+                    }
+                }
+                return false;
+            }
 
             $scope.getPostings = function(id) {
                 posFactory.getPostingsByProductID(id).then(
@@ -282,6 +465,40 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                     console.log(reason);
                 }
             );
+
+            $scope.goPostingDetail = function(id) {
+                console.log('/' + id);
+                $window.location.href = "/" + id;
+            }
+
+        }
+    ])
+    .controller('profileCtrl', ["$scope", "$http", "$window", "posFactory",
+        function($scope, $http, $window, posFactory) {
+
+            $scope.postings = [];
+            $scope.keyword = "";
+
+            // Table & Pagination
+            // PAGINATION
+            $scope.currentPage = 1;
+            $scope.itemsPerPage = 3;
+
+            var url = window.location.href;
+            var arr = url.split("/");
+            var id = arr[3];
+
+            $scope.pageChanged = function() {
+                console.log($scope.currentPage);
+            };
+
+            posFactory.getPostingsByUser(id).then(
+                data => {
+                    $scope.postings = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            )
 
             $scope.goPostingDetail = function(id) {
                 console.log('/' + id);

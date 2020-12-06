@@ -10,7 +10,7 @@
             <div class="form-inline">
                 <div class="form-inline ml-2">
                     <label>Hiển thị&nbsp;</label>
-                    <select id="pageSize" class="form-control" ng-change="repaginate()" ng-model="pageSize" convert-to-number>
+                    <select id="pageSize" class="form-control" ng-change="repaginate()" ng-model="itemsPerPage" convert-to-number>
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
@@ -20,11 +20,16 @@
                 </div>
             </div>
             <div class="input-group mb-2 mr-sm-2 ml-auto">
-                <button type="button" class="btn text-dark" style="background-color: white;" disabled>Từ</button>
-                <input type="date" class="form-control" ng-model="fromDate" style="border-radius: 5px;" />
-                <button type="button" class="btn text-dark" style="background-color: white;" disabled>đến</button>
-                <input type="date" class="form-control" ng-model="toDate" style="border-radius: 5px;" />
+                <button type="button" class="btn text-dark" style="background-color: white" disabled>
+          Từ
+        </button>
+                <input type="date" class="form-control" ng-model="fromDate" style="border-radius: 5px" />
+                <button type="button" class="btn text-dark" style="background-color: white" disabled>
+          đến
+        </button>
+                <input type="date" class="form-control" ng-model="toDate" style="border-radius: 5px" />
                 <input type="button" class="btn btn-outline-dark ml-2" value="Lọc" ng-click="obj.check()" />
+                <button class="btn btn-outline-dark ml-2" ng-click="refresh()"><i class="fad fa-sync-alt"></i></button>
             </div>
         </form>
         <table class="table table-hover table-responsive-sm text-center">
@@ -94,7 +99,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody ng-repeat="item in postings | orderBy: 'date' | limitTo: pageSize: begin" class="text-center">
+            <tbody ng-repeat="item in postings | orderBy: 'date' | limitTo:itemsPerPage:itemsPerPage*(currentPage-1)" class="text-center">
                 <tr>
                     <td scope="row">{{item.id}}</td>
                     <td ng-if=" item.type==false">Muốn bán</td>
@@ -125,23 +130,7 @@
         </table>
     </div>
     <div class="card-footer text-center">
-        <div class="row">
-            <div class="col">
-                <a ng-click="first()" title="Trang đầu" class="btn btn-default">
-                    <i class="fal fa-arrow-alt-up"></i>
-                </a>
-                <a ng-click="previous()" title="Trang trước" class="btn btn-default">
-                    <i class="fal fa-arrow-alt-left"></i>
-                </a>
-                <span class="text-muted">{{index}} / {{pageCountMax}}</span>
-                <a ng-click="next()" title="Trang tiếp" class="btn btn-default">
-                    <i class="fal fa-arrow-alt-right"></i>
-                </a>
-                <a ng-click="last()" title="Trang cuối" class="btn btn-default">
-                    <i class="fal fa-arrow-alt-down"></i>
-                </a>
-            </div>
-        </div>
+        <ul class="d-flex justify-content-center pagination-sm" uib-pagination total-items="postings.length" items-per-page="itemsPerPage" ng-model="currentPage" max-size="5" boundary-link-numbers="true" ng-change="pageChanged()"></ul>
     </div>
 
     <!-- Modal show information -->

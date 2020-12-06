@@ -60,70 +60,18 @@ var app = angular
             files: [],
         };
 
-        $scope.pageSize = 5;
-        $scope.begin = 0;
-        $scope.pageCount = Math.ceil($scope.postings.length / $scope.pageSize);
-
-        $scope.pageCountMax = 0;
-        $scope.index = 0;
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 5;
 
         $scope.repaginate = function() {
-            $scope.begin = 0;
-            $scope.pageCount = 0;
-            $scope.index = 1;
-            $scope.pageCountMax =
-                Math.round($scope.postings.length / $scope.pageSize) + 1;
+            $scope.currentPage = 1;
         };
 
-        $scope.first = function() {
-            $scope.begin = 0;
-            if ($scope.pageCountMax > 0) {
-                $scope.index = 1;
-            }
-        };
-
-        $scope.previous = function() {
-            if ($scope.begin > 0) {
-                $scope.begin -= $scope.pageSize;
-                if ($scope.pageCountMax > 0) {
-                    $scope.index--;
-                }
-            }
-        };
-
-        $scope.next = function() {
-            if (
-                $scope.begin <
-                Math.round($scope.postings.length / $scope.pageSize) * $scope.pageSize
-            ) {
-                $scope.begin += $scope.pageSize;
-                if ($scope.pageCountMax > 0) {
-                    $scope.index++;
-                }
-            }
-        };
-
-        $scope.last = function() {
-            $scope.begin =
-                Math.round($scope.postings.length / $scope.pageSize) *
-                $scope.pageSize;
-            if ($scope.pageCountMax > 0) {
-                $scope.index = $scope.pageCountMax;
-            }
-        };
 
         postingFactory.getPostings().then(
             (data) => {
                 $scope.postings = data;
                 $scope.arr = data;
-                $scope.pageCount = Math.ceil(
-                    $scope.postings.length / $scope.pageSize
-                );
-                $scope.pageCountMax =
-                    Math.round($scope.postings.length / $scope.pageSize) + 1;
-                if ($scope.pageCountMax > 0) {
-                    $scope.index = 1;
-                }
             },
             (reason) => {
                 console.log(reason);
@@ -149,6 +97,10 @@ var app = angular
                     }
                 }
             }
+        };
+
+        $scope.refresh = function() {
+            location.reload();
         };
 
         $scope.getPosting = function(id) {

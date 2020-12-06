@@ -1,5 +1,6 @@
 package edu.poly.spring.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,17 +16,58 @@ public class PostingSaved {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	@Column(columnDefinition = "nvarchar(50)")
+	private String assessor;
 	
-	@ManyToOne
-	@JoinColumn(name = "userId")
-	private User user;
+	@Column(columnDefinition = "nvarchar(50)")
+	private String supplyUnit;
 	
-	@ManyToOne
-	@JoinColumn(name = "shopId")
-	private Shop shop;
-	
-	@ManyToOne
-	@JoinColumn(name = "postingdetailId")
-	private PostingDetail postingdetail;
+	private Integer postingID;
+
+	public PostingSaved(Integer id, String assessor, String supplyUnit, Integer postingID) {
+		super();
+		this.id = id;
+		this.assessor = assessor;
+		this.supplyUnit = supplyUnit;
+		this.postingID = postingID;
+	}
+
+	public PostingSaved() {
+		super();
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getAssessor() {
+		return assessor;
+	}
+
+	public void setAssessor(String assessor) {
+		this.assessor = assessor;
+	}
+
+	public String getSupplyUnit() {
+		return supplyUnit;
+	}
+
+	public void setSupplyUnit(String supplyUnit) {
+		this.supplyUnit = supplyUnit;
+	}
+
+	public Integer getPostingID() {
+		return postingID;
+	}
+
+	public void setPostingID(Integer postingID) {
+		this.postingID = postingID;
+	}
+
 	
 }

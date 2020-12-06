@@ -283,6 +283,8 @@
         <!-- end list product -->
         <!-- group ca nhan ban chuyen -->
         <hr>
+        <input type="text" value="" name="usernameLogin" th:if="${user} == null" style="display: none;">
+        <input type="text" th:value="*{user.username}" name="usernameLogin" th:if="${user} != null" style="display: none;">
         <ul class="list-group" ng-repeat="item in list_postingDetals| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)">
             <li class="list-group-item filtered-products-card mb-2" ng-click="goPostingDetail(item.id)">
                 <div class="container-fluid">
@@ -309,11 +311,39 @@
                                     <span>
 	                                    <i class="fas fa-user"></i>&nbsp;
 	                                    {{item.posting.user.fullname}}{{item.posting.shop.shopname}}
+                                    </span>&ensp;
+                                    <span>
+	                                    <i class="fad fa-shopping-cart"></i>
+                                        <span ng-if="item.posting.type == false">Bán</span>
+                                    <span ng-if="item.posting.type == true">Mua</span>
                                     </span>
-
                                 </div>
-                                <div class="text-right filtered-product-button-save-posting">
-                                    <button type="button" class="btn btn-danger"><i class="fas fa-heart"></i></button>
+                                <div class="text-right filtered-product-button-save-posting" th:if="${user} == null">
+                                    <button type="button" class="btn" data-toggle="modal" data-target="#errorModal" ng-click="postingSave()" title="Lưu tin">
+                                        <i class="fal fa-heart-circle"></i>
+                                    </button>
+                                </div>
+                                <div class="text-right" th:if="${user} != null">
+                                    <form th:action="@{/savePost}" method="POST" class="filtered-product-button-save-posting" ng-if="checkButtonSave(item.id) != true">
+                                        <div style="display: none;">
+                                            <input type="text" value="{{item.id}}" th:name="postingDetailId">
+                                            <input type="text" value="{{url}}" th:name="url">
+                                        </div>
+                                        <button type="submit" class="btn" ng-click="postingSave()" title="Lưu tin">
+                                            <i class="fal fa-heart-circle"></i>
+                                        </button>
+                                    </form>
+                                    <div ng-repeat="ps in postingSaveds">
+                                        <form th:action="@{/delete}" method="POST" class="filtered-product-button-save-posting" ng-if="item.id == ps.postingID">
+                                            <div style="display: none;">
+                                                <input type="text" value="{{ps.id}}" th:name="postingSaveId">
+                                                <input type="text" value="{{url}}" th:name="url">
+                                            </div>
+                                            <button type="submit" class="btn" ng-click="postingSave()" title="Hủy lưu tin">
+                                                <i class="fad fa-heart-circle"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -321,7 +351,7 @@
                 </div>
             </li>
         </ul>
-        <ul class="d-flex justify-content-center pagination-sm" uib-pagination total-items="list_postingDetals.length" items-per-page="5" ng-model="currentPage" max-size="5" boundary-link-numbers="true" ng-change="pageChanged()"></ul>
+        <ul class="d-flex justify-content-center pagination-sm" uib-pagination total-items="list_postingDetals.length" items-per-page="5" ng-model="currentPage" max-size="itemsPerPage" boundary-link-numbers="true" ng-change="pageChanged()"></ul>
         <div class="text-center mt-3" ng-if="list_postingDetals.length == 0">
             <i class="fal fa-search" style="font-size: 125px;"></i>
             <h3>Tìm kiếm không có kết quả</h3>

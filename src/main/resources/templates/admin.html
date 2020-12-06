@@ -10,6 +10,7 @@
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
     <!-- Our Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
 
@@ -18,17 +19,115 @@
     <script src="/libs/font-awesome-pro-5.15.1/js/pro.js"></script>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="/css/pagination.css">
 
     <!-- angularJs -->
     <script src="/libs/angulars/angular.min.js"></script>
     <script src="/libs/angulars/angular-route.js"></script>
 
+    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-2.5.0.js"></script>
+    <script src="/libs/ui-bootstrap-2.5.0/ui-bootstrap-tpls-2.5.0.js"></script>
 </head>
 
 <body>
     <div class="wrapper">
         <!-- Sidebar  -->
-        <div id="sidebar" class="sidebarCollapse" ng-include="'/views/layouts/sidebar.html'">
+        <div id="sidebar" class="sidebarCollapse">
+            <div class="sidebar-header text-center">
+                <h3>
+                    <a href="/">
+                        <img src="images/choTroi2.png" alt="chotroi" width="120px">
+                    </a>
+                </h3>
+                <strong>
+                    <a href="/">
+                        <img src="images/choTroi2.png" alt="chotroi" width="50px">
+                    </a>
+                </strong>
+            </div>
+
+            <ul class="list-unstyled components" id="navbar-example3">
+                <li>
+                    <a href="#!/home">
+                        <i class="fad fa-home-alt"></i> Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <a href="#userSubmenu" data-toggle="collapse" id="targetSidebar" aria-expanded="false" class="dropdown-toggle" target="_self">
+                        <i class="fad fa-users-cog"></i> Người dùng
+                    </a>
+                    <ul class="collapse list-unstyled" id="userSubmenu">
+                        <li>
+                            <a href="#!/listUsers">Tất cả</a>
+                        </li>
+                        <li>
+                            <a href="#!/listUsersActivated">Đã kích hoạt</a>
+                        </li>
+                        <li>
+                            <a href="#!/listUsersNotActivated">Chưa kích hoạt</a>
+                        </li>
+                        <li>
+                            <a href="#!/listUsersBlock">Đã bị khóa</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#shopSubmenu" data-toggle="collapse" id="targetSidebar" aria-expanded="false" class="dropdown-toggle" target="_self">
+                        <i class="fad fa-store"></i> Đại lý
+                    </a>
+                    <ul class="collapse list-unstyled" id="shopSubmenu">
+                        <li>
+                            <a href="#!/listShops">Tất cả</a>
+                        </li>
+                        <li>
+                            <a href="#!/listShopsActivated">Đã kích hoạt</a>
+                        </li>
+                        <li>
+                            <a href="#!/listShopsNotActivated">Chưa kích hoạt</a>
+                        </li>
+                        <li>
+                            <a href="#!/listShopsBlock">Đã bị khóa</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#pageSubmenu" data-toggle="collapse" id="targetSidebar" aria-expanded="false" class="dropdown-toggle" target="_self">
+                        <i class="fad fa-clipboard"></i> Tin được đăng
+                    </a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                        <li>
+                            <a href="#!/listPostings">Tất cả</a>
+                        </li>
+                        <li>
+                            <a href="#!/listPostingsUnapproved">Tin chưa duyệt</a>
+                        </li>
+                        <li>
+                            <a href="#!/listPostingsApproved">Tin đã đăng</a>
+                        </li>
+                        <li>
+                            <a href="#!/listPostingsSold">Tin đã bán</a>
+                        </li>
+                        <li>
+                            <a href="#!/listPostingsBlock">Tin bị khóa</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#!/statistics">
+                        <i class="fad fa-clipboard-list"></i> Thống kê bản tin
+                    </a>
+                </li>
+                <!-- <li>
+                    <a href="#">
+                        <i class="fas fa-question"></i> FAQ
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-paper-plane"></i> Contact
+                    </a>
+                </li> -->
+            </ul>
         </div>
 
         <div id="content">
@@ -42,7 +141,7 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="nav navbar-nav ml-auto">
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="#">
                                     <i class="fal fa-bell"></i>
                                 </a>
@@ -56,11 +155,11 @@
                                 <a class="nav-link">
                                     <i class="fad fa-grip-lines-vertical"></i>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span>Nguyễn Chánh</span>
-                                    <img src="/images/user/chanhne.png" alt="user" class="rounded-circle" width="30px" height="30px">
+                                <a class="nav-link" th:href="@{/logout-admin}">
+                                    <span th:text="${admin.fullname}"></span>
+                                    <i class="fad fa-user-crown"></i>
                                 </a>
                             </li>
                         </ul>

@@ -53,9 +53,6 @@ public class Shop {
 	@JsonIgnore
 	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
 	private Set<Posting> postings;
-	
-	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
-	private Set<PostingSaved> postingsaveds;
 
 	public Shop() {
 		super();
@@ -76,7 +73,6 @@ public class Shop {
 		this.information = information;
 		this.status = status;
 		this.postings = postings;
-		this.postingsaveds = postingsaveds;
 	}
 
 	public Integer getId() {
@@ -166,13 +162,4 @@ public class Shop {
 	public void setPostings(Set<Posting> postings) {
 		this.postings = postings;
 	}
-
-	public Set<PostingSaved> getPostingsaveds() {
-		return postingsaveds;
-	}
-
-	public void setPostingsaveds(Set<PostingSaved> postingsaveds) {
-		this.postingsaveds = postingsaveds;
-	}
-
 }

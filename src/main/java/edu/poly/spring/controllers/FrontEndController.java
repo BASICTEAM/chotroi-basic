@@ -30,11 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.poly.spring.dtos.ShowRate;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
+import edu.poly.spring.models.PostingSaved;
 import edu.poly.spring.models.Product;
 import edu.poly.spring.models.ProductType;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
 import edu.poly.spring.services.PostingDetailService;
+import edu.poly.spring.services.PostingSavedService;
 import edu.poly.spring.services.PostingService;
 import edu.poly.spring.services.ProductService;
 import edu.poly.spring.services.ProductTypeService;
@@ -61,6 +63,9 @@ public class FrontEndController {
 
 	@Autowired
 	private PostingDetailService postingDetailService;
+	
+	@Autowired
+	private PostingSavedService postingSavedService;
 
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
@@ -397,6 +402,36 @@ public class FrontEndController {
 		}
 		return postingDetails;
 	}
-
+	
+	@GetMapping("postings/{address}")
+	public List<PostingDetail> getPostings(@PathVariable("address") String address) {
+		List<PostingDetail> postingDetails = new ArrayList<PostingDetail>();
+		
+		String[] parts = address.split(",");
+		String part1 = parts[0];
+		String part2 = parts[1].substring(1);
+		String part3 = parts[2].substring(1);
+		
+		if (!part1.equals("")) {
+			List<PostingDetail> listPD = (List<PostingDetail>) postingDetailService.findAll();
+			for (int i = 0; i < listPD.size(); i++) {
+				System.out.println("|" + listPD.get(i).getAddress());
+				if ((listPD.get(i).getAddress()).contains(part1)) {
+					postingDetails.add(listPD.get(i));
+				}
+			}
+			
+		}
+		
+		if (part2.equals("")) {
+			
+		}
+		return postingDetails;
+	}
+	
+	@GetMapping("posting-saved/find-all")
+	public List<PostingSaved> savePostingSaved() {
+		return (List<PostingSaved>) postingSavedService.findAll();
+	}
 
 }

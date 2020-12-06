@@ -36,20 +36,21 @@ import edu.poly.spring.dtos.RateDTO;
 import edu.poly.spring.dtos.ShowRate;
 import edu.poly.spring.dtos.UserLoginDTO;
 import edu.poly.spring.helpers.UserLogin;
-import edu.poly.spring.models.ChatBox;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
+import edu.poly.spring.models.PostingSaved;
 import edu.poly.spring.models.Product;
 import edu.poly.spring.models.Rate;
 import edu.poly.spring.models.Shop;
 import edu.poly.spring.models.User;
-import edu.poly.spring.services.ChatBoxService;
 import edu.poly.spring.services.PostingDetailService;
+import edu.poly.spring.services.PostingSavedService;
 import edu.poly.spring.services.PostingService;
 import edu.poly.spring.services.ProductService;
 import edu.poly.spring.services.RateService;
 import edu.poly.spring.services.ShopService;
 import edu.poly.spring.services.UserService;
+import javassist.expr.NewArray;
 
 @Controller
 public class PostingController {
@@ -75,13 +76,14 @@ public class PostingController {
 	private RateService rateService;
 
 	@Autowired
-	private ChatBoxService chatBoxService;
+	private PostingSavedService postingSavedService;
 
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
 
 	static int idshop;
 	static int iduser;
+	static String type;
 	static String sender = "";
 	public String image1 = "";
 	public String image2 = "";
@@ -109,6 +111,8 @@ public class PostingController {
 			model.addAttribute("userLogin", null);
 			model.addAttribute("shopLogin", UserLogin.SHOP);
 
+			model.addAttribute("postingSaved", postingSavedService.findAll());
+
 			return "postings/searchPostings";
 		}
 
@@ -118,6 +122,9 @@ public class PostingController {
 			model.addAttribute("user", UserLogin.USER);
 			model.addAttribute("userLogin", UserLogin.USER);
 			model.addAttribute("shopLogin", null);
+
+			model.addAttribute("postingSaved", postingSavedService.findAll());
+			System.out.println(postingSavedService.findAll().hashCode());
 
 			return "postings/searchPostings";
 		}
@@ -146,6 +153,8 @@ public class PostingController {
 			model.addAttribute("userLogin", null);
 			model.addAttribute("shopLogin", UserLogin.SHOP);
 
+			model.addAttribute("postingSaved", postingSavedService.findAll());
+
 			return "postings/searchPostings";
 		}
 
@@ -155,6 +164,8 @@ public class PostingController {
 			model.addAttribute("user", UserLogin.USER);
 			model.addAttribute("userLogin", UserLogin.USER);
 			model.addAttribute("shopLogin", null);
+
+			model.addAttribute("postingSaved", postingSavedService.findAll());
 
 			return "postings/searchPostings";
 		}
@@ -183,6 +194,8 @@ public class PostingController {
 			model.addAttribute("userLogin", null);
 			model.addAttribute("shopLogin", UserLogin.SHOP);
 
+			model.addAttribute("postingSaved", postingSavedService.findAll());
+
 			return "postings/searchPostings";
 		}
 
@@ -193,6 +206,8 @@ public class PostingController {
 			model.addAttribute("userLogin", UserLogin.USER);
 			model.addAttribute("shopLogin", null);
 
+			model.addAttribute("postingSaved", postingSavedService.findAll());
+
 			return "postings/searchPostings";
 		}
 
@@ -201,7 +216,13 @@ public class PostingController {
 
 	@RequestMapping("/{id}")
 	@Transactional
-	public String postingDetail(ModelMap model, @PathVariable("id") Integer id) {
+	public String postingDetail(ModelMap model, @PathVariable("id") String id) {
+
+		try {
+			Integer.parseInt(id);
+		} catch (NumberFormatException e) {
+			return "homes/error";
+		}
 
 		String assessorUserLogin = "";
 
@@ -232,7 +253,7 @@ public class PostingController {
 			}
 		}
 
-		Optional<PostingDetail> postingDetail = postingDetailService.findById(id);
+		Optional<PostingDetail> postingDetail = postingDetailService.findById(Integer.valueOf(id));
 
 		if (!postingDetail.isPresent()) {
 			return "homes/error";
@@ -326,10 +347,123 @@ public class PostingController {
 		return "postings/postingDetails";
 	}
 
+	@RequestMapping("/save")
+	public String save(ModelMap modelMap) {
+		PostingSaved postSave = new PostingSaved();
+
+		modelMap.addAttribute("post", postSave);
+
+		return "posting/postingDetail";
+	}
+
+	@RequestMapping("/savePost")
+	public String savePost(ModelMap model, @Validated PostingSaved postDTO, BindingResult result,
+			@RequestParam(name = "postingDetailId", required = false) String postingDetailId,
+			@RequestParam(name = "url") String url) {
+
+		String assessorUserLogin = "";
+
+		// Check login
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		} else {
+			if (UserLogin.ROLE_USER.equals("shop")) {
+				Shop shop = shopService.findByUsername(UserLogin.SHOP.getUsername());
+				UserLogin.SHOP = shop;
+				assessorUserLogin = shop.getUsername();
+				model.addAttribute("user", UserLogin.SHOP);
+				model.addAttribute("userLogin", null);
+				model.addAttribute("shopLogin", UserLogin.SHOP);
+			}
+
+			if (UserLogin.ROLE_USER.equals("user")) {
+				User user = userService.findByUsername(UserLogin.USER.getUsername());
+				UserLogin.USER = user;
+				assessorUserLogin = user.getUsername();
+				model.addAttribute("user", UserLogin.USER);
+				model.addAttribute("userLogin", UserLogin.USER);
+				model.addAttribute("shopLogin", null);
+
+			}
+		}
+
+		Optional<PostingDetail> postingDetail = postingDetailService.findById(Integer.parseInt(postingDetailId));
+
+		if (!postingDetail.isPresent()) {
+			return "homes/error";
+		}
+
+		String username = "";
+
+		if (postingDetail.get().getPosting().getUser() != null) {
+			username = postingDetail.get().getPosting().getUser().getUsername();
+			model.addAttribute("userPosting", userService.findByUsername(username));
+			model.addAttribute("shopPosting", null);
+		}
+		if (postingDetail.get().getPosting().getShop() != null) {
+			username = postingDetail.get().getPosting().getShop().getUsername();
+			model.addAttribute("userPosting", null);
+			model.addAttribute("shopPosting", shopService.findByUsername(username));
+		}
+
+		PostingSaved postingSaved = new PostingSaved();
+		postingSaved.setId(0);
+		// username của người mua
+		postingSaved.setAssessor(assessorUserLogin);
+		// username của người bán
+		postingSaved.setSupplyUnit(username);
+		// id của tin được theo dõi
+		postingSaved.setPostingID(postingDetail.get().getId());
+
+		postingSavedService.save(postingSaved);
+
+		model.addAttribute("postDTO", postDTO);
+
+		return "redirect:/" + url;
+	}
+
+	@RequestMapping("/delete")
+	public String delete(ModelMap model, @RequestParam(name = "postingSaveId") Integer postingSaveId,
+			@RequestParam(name = "url") String url) {
+
+		String assessorUserLogin = "";
+
+		// Check login
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		} else {
+			if (UserLogin.ROLE_USER.equals("shop")) {
+				Shop shop = shopService.findByUsername(UserLogin.SHOP.getUsername());
+				UserLogin.SHOP = shop;
+				assessorUserLogin = shop.getUsername();
+				model.addAttribute("user", UserLogin.SHOP);
+				model.addAttribute("userLogin", null);
+				model.addAttribute("shopLogin", UserLogin.SHOP);
+			}
+
+			if (UserLogin.ROLE_USER.equals("user")) {
+				User user = userService.findByUsername(UserLogin.USER.getUsername());
+				UserLogin.USER = user;
+				assessorUserLogin = user.getUsername();
+				model.addAttribute("user", UserLogin.USER);
+				model.addAttribute("userLogin", UserLogin.USER);
+				model.addAttribute("shopLogin", null);
+
+			}
+		}
+
+		postingSavedService.deleteById(postingSaveId);
+
+		return "redirect:/" + url;
+	}
+
 	@PostMapping("/saveRate")
 	public String saveRate(ModelMap model, @Validated RateDTO rateDTO, BindingResult result,
 			@RequestParam(name = "postingDetailId") String postingDetailId) {
-
 		String filename = "";
 		String assessor = "";
 		String supplyUnit = "";
@@ -419,8 +553,12 @@ public class PostingController {
 
 	@PostMapping("/postingdetails/saveOrUpdate")
 	public String saveOrUpdate(ModelMap model, @Validated PostingDetailDto postingDetailDto, BindingResult result,
+			@RequestParam(value = "strPrice", required = false) String strPrice,
 			@RequestParam(value = "productName", required = false) String productName,
-			@RequestParam(value = "postingType", required = false) boolean postingType) {
+			@RequestParam(value = "postingType", required = false) boolean postingType,
+			@RequestParam(value = "addressPhuongXa", required = false) String addressPhuongXa,
+			@RequestParam(value = "addressQuanHuyen", required = false) String addressQuanHuyen,
+			@RequestParam(value = "addressTinhThanhPho", required = false) String addressTinhThanhPho) {
 
 		// Check login
 		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
@@ -428,28 +566,93 @@ public class PostingController {
 			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
 			return "logins/login";
 		}
-
-		if (productName.equals("") || productName == null) {
-			if (UserLogin.ROLE_USER.equals("user")) {
-				User user = UserLogin.USER;
-				model.addAttribute("user", user);
-				model.addAttribute("userLogin", user);
-				model.addAttribute("shopLogin", null);
-			}
-			if (UserLogin.ROLE_USER.equals("shop")) {
-				Shop shop = UserLogin.SHOP;
-				model.addAttribute("user", shop);
-				model.addAttribute("userLogin", null);
-				model.addAttribute("shopLogin", shop);
-			}
-			model.addAttribute("messageError", "Bạn chưa chọn danh mục sản phẩm!");
-			return "postings/posting";
+		
+		// SET USER ĐĂNG NHẬP
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+		}
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
 		}
 
+		
+		// KIỂM TRA DANH MỤC SẢN PHẨM
+		if (productName.equals("") || productName == null) {
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Bạn chưa chọn danh mục sản phẩm!");
+			return "postings/posting";
+		}		
+
+		// KIỂM TRA GIÁ CẢ SẢN PHẨM
+		strPrice = strPrice.replace("$", "").replace(",", "");
+		try {
+			if (strPrice.equals("") || strPrice == null) {
+				PostingDetailDto pdd = new PostingDetailDto();
+				pdd.setTitle(postingDetailDto.getTitle());
+				pdd.setManufacturer(postingDetailDto.getManufacturer());
+				pdd.setProduct_type(postingDetailDto.getProduct_type());
+				pdd.setContent(postingDetailDto.getContent());
+				model.addAttribute("postingDetailDto", pdd);
+				model.addAttribute("messageError", "Bạn chưa nhập giá cả sản phẩm!");
+				return "postings/posting";
+			}
+	        double douPrice = Double.parseDouble(strPrice);
+	        postingDetailDto.setPrice(douPrice);
+	    } catch (NumberFormatException nfe) {
+	    	PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Giá cả sản phẩm nhập không đúng định dạng!");
+			return "postings/posting";
+	    }
+		
+		// CHUYỂN ĐỔI ĐỊA CHỈ
+		String address = addressTinhThanhPho;
+		if (addressPhuongXa != null || addressPhuongXa.equals("")) {
+			address = addressPhuongXa + ", " + addressQuanHuyen + ", " + addressTinhThanhPho;
+		}
+		if (addressQuanHuyen != null || addressQuanHuyen.equals("")) {
+			address = addressQuanHuyen + ", " + addressTinhThanhPho;
+		}
+		
+		System.out.println(address);
+		
+		//KIỂM TRA ĐỊA CHỈ SẢN PHẨM
+		if (address.equals("") || address == null || address.equals(", ")) {
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Bạn chưa chọn địa chỉ của sản phẩm!");
+			return "postings/posting";
+		}
+		
+		// KIỂM TRA TẤT CẢ BẢN TIN
 		if (result.hasErrors()) {
 			System.out.println(result);
-			model.addAttribute("message", "Please input or required fields!!");
-			model.addAttribute("postingDetailDto", postingDetailDto);
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Vui lòng nhập đầy đủ thông tin!");
 			return "postings/posting";
 		}
 
@@ -460,15 +663,14 @@ public class PostingController {
 		posting.setProduct(product);
 		posting.setDate(new Date());
 		posting.setStatus("unapproved");
-		
+		postingService.save(posting);
+
 		if (UserLogin.ROLE_USER.equals("user")) {
 			posting.setUser(UserLogin.USER);
 		}
 		if (UserLogin.ROLE_USER.equals("shop")) {
 			posting.setShop(UserLogin.SHOP);
 		}
-
-		postingService.save(posting);
 
 		Posting pt = postingService.findTopByOrderByIdDesc();
 		PostingDetail postingDetail = new PostingDetail();
@@ -479,15 +681,10 @@ public class PostingController {
 		postingDetail.setContent(postingDetailDto.getContent());
 		postingDetail.setPrice(postingDetailDto.getPrice());
 		postingDetail.setPosting(pt);
-		postingDetail.setAddress(postingDetailDto.getAddress());
+		postingDetail.setAddress(address);
 
-		if (postingDetailDto.getId() != 0 && postingDetailDto.getId() > 0) {
-			model.addAttribute("message", "The tin updated!");
-		} else {
-			model.addAttribute("message", "New tin inserted!");
-
-		}
 		Path path = Paths.get("images/");
+		
 		try (InputStream inputStream = postingDetailDto.getPhoto1().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto1().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -495,8 +692,16 @@ public class PostingController {
 			System.out.println(postingDetailDto.getPhoto1());
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
+			return "postings/posting";
 		}
+		
 		try (InputStream inputStream = postingDetailDto.getPhoto2().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto2().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -504,8 +709,16 @@ public class PostingController {
 			System.out.println(postingDetailDto.getPhoto2());
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
+			return "postings/posting";
 		}
+		
 		try (InputStream inputStream = postingDetailDto.getPhoto3().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto3().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -513,8 +726,16 @@ public class PostingController {
 			System.out.println(postingDetailDto.getPhoto3());
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			PostingDetailDto pdd = new PostingDetailDto();
+			pdd.setTitle(postingDetailDto.getTitle());
+			pdd.setManufacturer(postingDetailDto.getManufacturer());
+			pdd.setProduct_type(postingDetailDto.getProduct_type());
+			pdd.setContent(postingDetailDto.getContent());
+			model.addAttribute("postingDetailDto", pdd);
+			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
+			return "postings/posting";
 		}
+		
 		try (InputStream inputStream = postingDetailDto.getPhoto4().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto4().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -522,7 +743,7 @@ public class PostingController {
 			System.out.println(postingDetailDto.getPhoto4());
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			System.out.println(4);
 		}
 
 		if (postingDetailDto.getPhoto1().getOriginalFilename().equals("")) {
@@ -530,16 +751,19 @@ public class PostingController {
 		} else {
 			postingDetail.setPicture1(postingDetailDto.getPhoto1().getOriginalFilename());
 		}
+		
 		if (postingDetailDto.getPhoto2().getOriginalFilename().equals("")) {
 			postingDetail.setPicture2(image2);
 		} else {
 			postingDetail.setPicture2(postingDetailDto.getPhoto2().getOriginalFilename());
 		}
+		
 		if (postingDetailDto.getPhoto3().getOriginalFilename().equals("")) {
 			postingDetail.setPicture3(image3);
 		} else {
 			postingDetail.setPicture3(postingDetailDto.getPhoto3().getOriginalFilename());
 		}
+		
 		if (postingDetailDto.getPhoto4().getOriginalFilename().equals("")) {
 			postingDetail.setPicture4(image4);
 		} else {
@@ -566,165 +790,34 @@ public class PostingController {
 		return "postings/posting";
 	}
 
-	@GetMapping("/{username}/profile")
-	public String getProfilePosting() {
+	@GetMapping("/{id}/profile")
+	public String getProfile(ModelMap model) {
+
+		if (!UserLogin.authenticated_user() && !UserLogin.authenticated_shop()) {
+			model.addAttribute("user", null);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", null);
+
+			return "postings/profile";
+		}
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = shopService.findByUsername(UserLogin.SHOP.getUsername());
+			UserLogin.SHOP = shop;
+			model.addAttribute("user", UserLogin.SHOP);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", UserLogin.SHOP);
+		}
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = userService.findByUsername(UserLogin.USER.getUsername());
+			UserLogin.USER = user;
+			model.addAttribute("user", UserLogin.USER);
+			model.addAttribute("userLogin", UserLogin.USER);
+			model.addAttribute("shopLogin", null);
+		}
 
 		return "postings/profile";
-	}
-
-	@GetMapping("/chat/{id}")
-	public String chat(ModelMap model, @PathVariable(name = "id") Integer id) {
-		
-		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
-			model.addAttribute("userLoginDTO", new UserLoginDTO());
-			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
-			return "logins/login";
-		}
-
-		if (UserLogin.ROLE_USER.equals("user")) {
-			User user = UserLogin.USER;
-			iduser = user.getId();
-			model.addAttribute("user", user);
-			model.addAttribute("userLogin", user);
-			model.addAttribute("shopLogin", null);
-
-			Optional<User> optUser = userService.findById(iduser);
-			if (optUser.isPresent()) {
-				model.addAttribute("user", optUser.get());
-				sender = optUser.get().getFullname();
-			} else {
-				return "postings/postingDetails";
-			}
-			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
-					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
-					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where shops.id=" + id
-					+ " and users.id=" + iduser);
-
-			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
-			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
-				Object[] records1 = (Object[]) iterator1.next();
-				System.out.println("=======" + records1[0]);
-				System.out.println("=======" + records1[1]);
-
-			}
-
-			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query = session.createSQLQuery("	select distinct chat.iduser,chat.idshop,shop.shopname \r\n"
-					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
-					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.iduser =" + iduser);
-			List<Object[]> list = ((org.hibernate.query.Query) query).list();
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				Object[] records = (Object[]) iterator.next();
-				System.out.println("=======" + records[0]);
-				System.out.println("=======" + records[1]);
-
-			}
-			model.addAttribute("arrays", list1);
-			model.addAttribute("arrays1", list);
-			model.addAttribute("chatbox", new ChatBox());
-		}
-
-		if (UserLogin.ROLE_USER.equals("shop")) {
-			Shop shop = UserLogin.SHOP;
-			iduser = shop.getId();
-			model.addAttribute("user", shop);
-			model.addAttribute("userLogin", null);
-			model.addAttribute("shopLogin", shop);
-
-			Optional<Shop> optShop = shopService.findById(iduser);
-			if (optShop.isPresent()) {
-				model.addAttribute("shop", optShop.get());
-				sender = optShop.get().getShopname();
-			} else {
-				return "postings/postingDetails";
-			}
-			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
-					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
-					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where users.id=" + id
-					+ " and shops.id=" + iduser);
-
-			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
-			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
-				Object[] records1 = (Object[]) iterator1.next();
-				System.out.println("=======" + records1[0]);
-				System.out.println("=======" + records1[1]);
-
-			}
-
-			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-			Query query = session.createSQLQuery("	select distinct chat.idshop,chat.iduser,us.fullname \r\n"
-					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
-					+ "	join users us on us.id = chat.iduser \r\n" + "					 where chat.idshop =" + iduser);
-			List<Object[]> list = ((org.hibernate.query.Query) query).list();
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				Object[] records = (Object[]) iterator.next();
-				System.out.println("=======" + records[0]);
-				System.out.println("=======" + records[1]);
-
-			}
-			model.addAttribute("arrays", list1);
-			model.addAttribute("arrays1", list);
-			model.addAttribute("chatbox", new ChatBox());
-		}
-
-		return "homes/chat";
-	}
-
-	@PostMapping("/savechat")
-	public String savechat(ModelMap model, ChatBox chatbox) {
-		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
-			model.addAttribute("userLoginDTO", new UserLoginDTO());
-			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
-			return "logins/login";
-		}
-
-		if (UserLogin.ROLE_USER.equals("user")) {
-			User user = UserLogin.USER;
-			iduser = user.getId();
-			model.addAttribute("user", user);
-			model.addAttribute("userLogin", user);
-			model.addAttribute("shopLogin", null);
-			
-			if (chatbox.getId() != null && chatbox.getId() > 0) {
-			}
-			
-			Shop shop = new Shop();
-			shop.setId(idshop);
-			chatbox.setShop(shop);
-			User user1 = new User();
-			user1.setId(iduser);
-			chatbox.setUser(user1);
-			chatbox.setTime(sender);
-			chatBoxService.save(chatbox);
-			model.addAttribute(chatbox);
-			System.out.println(chatbox.getMessage());
-
-		}
-
-		if (UserLogin.ROLE_USER.equals("shop")) {
-			Shop shop = UserLogin.SHOP;
-			iduser = shop.getId();
-			model.addAttribute("user", shop);
-			model.addAttribute("userLogin", null);
-			model.addAttribute("shopLogin", shop);
-			if (chatbox.getId() != null && chatbox.getId() > 0) {
-			}
-			Shop shop1 = new Shop();
-			shop1.setId(iduser);
-			chatbox.setShop(shop1);
-			User user = new User();
-			user.setId(idshop);
-			chatbox.setUser(user);
-			chatbox.setTime(sender);
-			chatBoxService.save(chatbox);
-			model.addAttribute(chatbox);
-			System.out.println(chatbox.getMessage());
-
-		}
-
-		return "homes/chat";
 	}
 
 }

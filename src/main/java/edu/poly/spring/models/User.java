@@ -57,10 +57,7 @@ public class User {
 
 	@Column(length = 20)
 	private String status;
-	
-	@Column
-	private boolean role;
-	
+		
 	@Column
 	private boolean gender;
 	
@@ -68,9 +65,6 @@ public class User {
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Posting> postings;
-	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<PostingSaved> postingsaveds;
 	
 	public User() {
 		super();
@@ -90,10 +84,8 @@ public class User {
 		this.birthday = birthday;
 		this.address = address;
 		this.status = status;
-		this.role = role;
 		this.gender = gender;
 		this.postings = postings;
-		this.postingsaveds = postingsaveds;
 	}
 
 	public Integer getId() {
@@ -176,14 +168,6 @@ public class User {
 		this.status = status;
 	}
 
-	public boolean isRole() {
-		return role;
-	}
-
-	public void setRole(boolean role) {
-		this.role = role;
-	}
-
 	public boolean isGender() {
 		return gender;
 	}
@@ -198,13 +182,5 @@ public class User {
 
 	public void setPostings(Set<Posting> postings) {
 		this.postings = postings;
-	}
-
-	public Set<PostingSaved> getPostingsaveds() {
-		return postingsaveds;
-	}
-
-	public void setPostingsaveds(Set<PostingSaved> postingsaveds) {
-		this.postingsaveds = postingsaveds;
 	}
 }
