@@ -15,23 +15,31 @@ public class ChatBox {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Column(length = 500)
+	@Column(columnDefinition = "nvarchar(500)")
 	private String message;
-	@Column(length = 100)
+	@Column(columnDefinition = "nvarchar(100)")
 	private String time;
 	@ManyToOne
 	@JoinColumn(name = "iduser")
 	private User user;
 	@ManyToOne
+	@JoinColumn(name = "iduser2")
+	private User user2;
+	@ManyToOne
 	@JoinColumn(name = "idshop")
 	private Shop shop;
-	public ChatBox(Integer id, String message, String time, User user, Shop shop) {
+	@ManyToOne
+	@JoinColumn(name = "idshop2")
+	private Shop shop2;
+	public ChatBox(Integer id, String message, String time, User user, User user2, Shop shop, Shop shop2) {
 		super();
 		this.id = id;
 		this.message = message;
 		this.time = time;
 		this.user = user;
+		this.user2 = user2;
 		this.shop = shop;
+		this.shop2 = shop2;
 	}
 	public ChatBox() {
 		super();
@@ -60,11 +68,27 @@ public class ChatBox {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	public User getUser2() {
+		return user2;
+	}
+	public void setUser2(User user2) {
+		this.user2 = user2;
+	}
 	public Shop getShop() {
 		return shop;
 	}
 	public void setShop(Shop shop) {
 		this.shop = shop;
 	}
+	public Shop getShop2() {
+		return shop2;
+	}
+	public void setShop2(Shop shop2) {
+		this.shop2 = shop2;
+	}
+	
+	
+	
+	
 	
 }

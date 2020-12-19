@@ -30,13 +30,13 @@ public class HomeController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private AdminService adminService;
 
 	@RequestMapping("/")
 	public String home(ModelMap model) {
-		
+
 		log.info("Request to Homepage");
 
 		// Don't login to system
@@ -84,7 +84,7 @@ public class HomeController {
 			model.addAttribute("admin", new Admin());
 			return "homes/adminLogin.html";
 		}
-		
+
 		model.addAttribute("admin", AdminLogin.ADMIN);
 
 		return "admin";
@@ -119,7 +119,7 @@ public class HomeController {
 				}
 			}
 		}
-		
+
 		model.addAttribute("message", "Tài khoản hoặc mật khẩu không đúng!");
 
 		return "homes/adminLogin.html";
@@ -129,9 +129,9 @@ public class HomeController {
 	public String logout(ModelMap model) {
 
 		AdminLogin.logoff();
-		
+
 		model.addAttribute("admin", new Admin());
 
-		return "admin";
+		return "redirect:/admin";
 	}
 }

@@ -36,4 +36,6 @@ public interface PostingDetailService {
 
 	PostingDetail findPostingDetailByPostingId(Integer id);
 
+	List<PostingDetail> findByPostingId(Integer id);
+
 }

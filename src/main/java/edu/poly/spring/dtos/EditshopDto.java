@@ -10,33 +10,38 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class EditshopDto implements Serializable {
 	private Integer id;
+	
 	@NotNull
 	@NotEmpty(message = "Name is empty")
 	private String username;
+	
 	@NotNull
 	private MultipartFile image;
-	@NotNull
-	@NotEmpty(message = "Password is empty")
+	
 	private String password;
+	
 	@NotNull
 	@NotEmpty(message = "Phone is empty")
 	private String phone;
+	
 	@NotNull
 	@NotEmpty(message = "Email is empty")
 	private String email;
+	
 	@NotNull
 	@NotEmpty(message = "Shopname is empty")
 	private String shopname;
-	@NotNull
-	@NotEmpty(message = "Businesscode is empty")
-	private String businesscode;
+
 	@NotNull
 	@NotEmpty(message = "address is empty")
 	private String address;
+	
 	@NotNull
 	@NotEmpty(message = "information is empty")
 	private String information;
+	
 	private String status;
+	
 	public EditshopDto(Integer id, @NotNull @NotEmpty(message = "Name is empty") String username,
 			@NotNull MultipartFile image, @NotNull @NotEmpty(message = "Password is empty") String password,
 			@NotNull @NotEmpty(message = "Phone is empty") String phone,
@@ -54,7 +59,6 @@ public class EditshopDto implements Serializable {
 		this.phone = phone;
 		this.email = email;
 		this.shopname = shopname;
-		this.businesscode = businesscode;
 		this.address = address;
 		this.information = information;
 		this.status = status;
@@ -103,12 +107,6 @@ public class EditshopDto implements Serializable {
 	}
 	public void setShopname(String shopname) {
 		this.shopname = shopname;
-	}
-	public String getBusinesscode() {
-		return businesscode;
-	}
-	public void setBusinesscode(String businesscode) {
-		this.businesscode = businesscode;
 	}
 	public String getAddress() {
 		return address;

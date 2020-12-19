@@ -22,6 +22,10 @@ public interface PostingRepository extends CrudRepository<Posting, Integer> {
 
 	List<Posting> findByShop(Shop shop);
 
-	List<Posting> findTop16ByOrderByDateDesc();
+	List<Posting> findTop31ByOrderByIdDesc();
+
+	List<Posting> findPostingsByStatusAndUser(String name, User user);
+	
+	List<Posting> findPostingsByStatusAndShop(String name, Shop shop);
 
 }

@@ -148,7 +148,7 @@
                             </div>
                             <div class="col-12 my-2">
                                 <span><i class="fad fa-conveyor-belt-alt"></i> Hãng sản phẩm:
-                                {{postingdetail.manufacturer}}</span>
+                                    {{postingdetail.manufacturer}}</span>
                             </div>
                             <div class="col-12 my-2">
                                 <span><i class="fad fa-tasks"></i> Loại sản phẩm: {{postingdetail.product_type}}</span>
@@ -162,32 +162,47 @@
                     </div>
                     <div class="row">
                         <span class="card-postingdetail-title-show text-success font-italic" ng-if="postingdetail.posting.status == 'approved'">
-                            <i class="fas fa-shield-alt"></i> Tin đăng này đã được kiểm duyệt. Nếu gặp vấn đề, vui lòng báo cáo hoặc liên hệ CSKH để được trợ giúp.
+                            <i class="fas fa-shield-alt"></i> Tin đăng này đã được kiểm duyệt. Nếu gặp vấn đề, vui lòng
+                            báo cáo hoặc liên hệ CSKH để được trợ giúp.
                         </span>
                         <span class="card-postingdetail-title-show text-warning font-italic" ng-if="postingdetail.posting.status == 'unapproved'">
-                            <i class="fad fa-exclamation-triangle"></i> Tin đăng này chưa kiểm duyệt. Nếu gặp vấn đề, vui lòng báo cáo hoặc liên hệ CSKH để được trợ giúp.
+                            <i class="fad fa-exclamation-triangle"></i> Tin đăng này chưa kiểm duyệt. Nếu gặp vấn đề,
+                            vui lòng báo cáo hoặc liên hệ CSKH để được trợ giúp.
                         </span>
                         <span class="card-postingdetail-title-show text-danger font-italic" ng-if="postingdetail.posting.status == 'block'">
-                            <i class="fad fa-file-times"></i> Tin đăng này đã bị khóa. Nếu gặp vấn đề, vui lòng báo cáo hoặc liên hệ CSKH để được trợ giúp.
+                            <i class="fad fa-file-times"></i> Tin đăng này đã bị khóa. Nếu gặp vấn đề, vui lòng báo cáo
+                            hoặc liên hệ CSKH để được trợ giúp.
                         </span>
                         <span class="card-postingdetail-title-show text-danger font-italic" ng-if="postingdetail.posting.status == 'sold'">
-                            <i class="fad fa-trash"></i> Tin đăng này đã bán. Nếu gặp vấn đề, vui lòng báo cáo hoặc liên hệ CSKH để được trợ giúp.
+                            <i class="fad fa-trash"></i> Tin đăng này đã bán. Nếu gặp vấn đề, vui lòng báo cáo hoặc liên
+                            hệ CSKH để được trợ giúp.
                         </span>
                     </div>
-                    <div class="row">
-                        <div class="col-3"></div>
-                        <div class="col-9 card-postingdetail-report">
-                            <button>
-                                <i class="fas fa-exclamation-triangle"></i> Tin đăng đã bán
+                    <div class="row d-flex justify-content-center" th:if="${user} == null">
+                        <div class="card-postingdetail-report">
+                            <button type="button" data-toggle="modal" data-target="#errorModal">
+                                <i class="fal fa-exclamation-triangle"></i> Đơn đã thanh toán
                             </button>
-                            <button>
-                                <i class="fas fa-exclamation-triangle"></i> Spam
+                            <button type="button" data-toggle="modal" data-target="#errorModal">
+                                <i class="fal fa-exclamation-triangle"></i> Spam
                             </button>
-                            <button>
-                                <i class="fas fa-exclamation-triangle"></i> Vi phạm quy tắc
+                            <button type="button" data-toggle="modal" data-target="#errorModal">
+                                <i class="fal fa-exclamation-triangle"></i> Vi phạm quy tắc
                             </button>
                         </div>
-                        <!-- <div class="col-2"></div> -->
+                    </div>
+                    <div class="row d-flex justify-content-center" th:if="${user} != null">
+                        <div class="card-postingdetail-report">
+                            <button type="button" ng-click="reportPostingDetail('paid')">
+                                <i class="fal fa-exclamation-triangle"></i> Đơn đã thanh toán
+                            </button>
+                            <button type="button" ng-click="reportPostingDetail('spam')">
+                                <i class="fal fa-exclamation-triangle"></i> Spam
+                            </button>
+                            <button type="button" ng-click="reportPostingDetail('violate')">
+                                <i class="fal fa-exclamation-triangle"></i> Vi phạm quy tắc
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -305,7 +320,8 @@
                                                             onchange="previewFile(this);"
                                                             style="cursor: pointer; display: none;" />
                                                     </label>
-                                                    <span class="text-muted font-italic">Hình ảnh kích thước dưới 1MB.</span>
+                                                    <span class="text-muted font-italic">Hình ảnh kích thước dưới
+                                                        1MB.</span>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -405,7 +421,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <tr th:if="${sr.image} != ''">
                                                 <td colspan="2"><img th:alt="${sr.image}" th:src="@{'/getimage/' + ${sr.id} + '/rate'}" height="60px" width="60px"></td>
                                             </tr>
                                             <tr>
@@ -481,6 +497,18 @@
                     <button ng-if="postingdetail.posting.shop != null">
                         <i class="fad fa-phone"></i> Số điện thoại :
                         <strong>{{postingdetail.posting.shop.phone}}</strong>
+                    </button>
+                </div>
+                <div class="row card-postingdetail-phone">
+                    <button ng-if="postingdetail.posting.shop != null">
+                        <a th:href="@{chatshop/{{postingdetail.posting.shop.id}}}">
+                            <i class="fad fa-comments-alt"></i> Chat với người bán
+                        </a>
+                    </button>
+                    <button ng-if="postingdetail.posting.user != null">
+                        <a th:href="@{chatuser/{{postingdetail.posting.user.id}}}">
+                            <i class="fad fa-comments-alt"></i> Chat với người bán
+                        </a>
                     </button>
                 </div>
             </aside>

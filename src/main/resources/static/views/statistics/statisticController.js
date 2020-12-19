@@ -79,20 +79,29 @@ var app = angular
         );
 
         $scope.obj.check = function() {
-            console.log("called me", $scope.fromDate);
             var d1 = new Date($scope.fromDate);
             var d2 = new Date($scope.toDate);
-            if (d1.getTime() > d2.getTime()) {
+            console.log("d1 ", d1.getTime());
+            console.log("d2 ", d2.getTime());
+            if(d1.getTime() == d2.getTime()){
+            	var d3 = d2.getTime() + 25200000;
+            	$scope.postings = [];
+                for (const i in $scope.arr) {
+                    var cmp = new Date($scope.arr[i].date);
+                    console.log("called me cmp", cmp.getTime());
+                    if (d3 <= cmp.getTime() ) {
+                        $scope.postings.push($scope.arr[i]);
+                    }
+                }
+            }
+            else if (d1.getTime() > d2.getTime()) {
                 console.log("error");
             } else {
                 $scope.postings = [];
                 for (const i in $scope.arr) {
                     var cmp = new Date($scope.arr[i].date);
-                    console.log("called me d1", d1.getTime());
-                    console.log("called me d2", d2.getTime());
                     console.log("called me cmp", cmp.getTime());
                     if (d1.getTime() <= cmp.getTime() && d2.getTime() >= cmp.getTime()) {
-                        console.log("Val in between");
                         $scope.postings.push($scope.arr[i]);
                     }
                 }

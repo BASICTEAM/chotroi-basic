@@ -147,6 +147,41 @@
                             <span ng-if="shop.status == 'block'">Đã bị khóa</span>
                             </span>
                         </div>
+                        <div ng-if="postings[0].id != null">
+                            <hr>
+                            <h4>Tổng số bài đã đăng: {{postings.length}}</h4>
+                            <div class="list-group">
+                                <div class="list-group-item flex-column align-items-start" ng-repeat="item in postings">
+                                    <div class="text-center">
+                                        <h5 class="mb-1">Id: {{item.id}} - {{item.postings[0].title}}</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small>Số tiền: {{item.postings[0].price | currency : "" : 0}}</small>
+                                        </div>
+                                        <div class="col">
+                                            <small>Ngày đăng: {{item.date | date : 'dd/MM/yyyy'}}</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small ng-if="item.status == 'unapproved'">Trạng thái: Chưa duyệt</small>
+                                            <small ng-if="item.status == 'approved'">Trạng thái: Đã duyệt</small>
+                                            <small ng-if="item.status == 'sold'">Trạng thái: Đã bán</small>
+                                            <small ng-if="item.status == 'block'">Trạng thái: Bị khóa</small>
+                                        </div>
+                                        <div class="col">
+                                            <small>Danh mục: {{item.product.postings.name}}</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small>Địa chỉ: {{item.postings[0].address}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -162,7 +197,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title" id="exampleModalLabel">
-                        Bạn có chắc chắn xóa người dùng <b>{{shop.shopname}}</b> không?
+                        Bạn có chắc chắn xóa người dùng <b>{{shop.shopname}}</b>không?<br> Note: Tất cả bài đăng của <b>{{shop.shopname}}</b> sẽ xóa bị xóa!
                     </h6>
                 </div>
                 <div class="modal-footer">

@@ -21,6 +21,11 @@ public class PostingDetailServiceImpl implements PostingDetailService {
 	PostingRepository postingRepository;
 
 	@Override
+	public List<PostingDetail> findByPostingId(Integer id) {
+		return postingDetailRepository.findByPostingId(id);
+	}
+
+	@Override
 	public PostingDetail findPostingDetailByPostingId(Integer id) {
 		return postingDetailRepository.findPostingDetailByPostingId(id);
 	}

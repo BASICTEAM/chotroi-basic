@@ -17,8 +17,6 @@ public class EdituserDto implements Serializable {
 	@NotNull
 	@NotEmpty(message = "Name is empty")
 	private String username;
-	@NotNull
-	@NotEmpty(message = "Password is empty")
 	private String password;
 	@NotNull
 	@NotEmpty(message = "Phone is empty")

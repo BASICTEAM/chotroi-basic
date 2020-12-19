@@ -12,4 +12,5 @@ import edu.poly.spring.models.PostingDetail;
 public interface PostingDetailRepository extends CrudRepository<PostingDetail, Integer> {
 	List<PostingDetail> findPostingDetailByTitleContaining(String tile);
 	PostingDetail findPostingDetailByPostingId(Integer id);
+	List<PostingDetail> findByPostingId(Integer id);
 }

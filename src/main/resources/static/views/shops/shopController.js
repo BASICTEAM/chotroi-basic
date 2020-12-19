@@ -65,6 +65,7 @@ var app = angular
     function(shopFactory, $scope, $http) {
         $scope.shops = [];
         $scope.shop = {};
+        $scope.postings = [];
         $scope.titleContent = '';
 
         var url = window.location.href;
@@ -142,6 +143,13 @@ var app = angular
                     console.log(reason);
                 }
             );
+            shopFactory.getPostingsById(id).then(
+                data => {
+                    $scope.postings = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            )
         };
 
         $scope.update = function(id) {

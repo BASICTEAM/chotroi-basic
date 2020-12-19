@@ -45,7 +45,6 @@
                     </a>
                 </strong>
             </div>
-
             <ul class="list-unstyled components" id="navbar-example3">
                 <li>
                     <a href="#!/home">
@@ -102,7 +101,7 @@
                             <a href="#!/listPostingsUnapproved">Tin chưa duyệt</a>
                         </li>
                         <li>
-                            <a href="#!/listPostingsApproved">Tin đã đăng</a>
+                            <a href="#!/listPostingsApproved">Tin đã duyệt</a>
                         </li>
                         <li>
                             <a href="#!/listPostingsSold">Tin đã bán</a>
@@ -200,6 +199,15 @@
     <script src="/core/version/version.js"></script>
     <script src="/core/version/version-directive.js"></script>
     <script src="/core/version/interpolate-filter.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+    
 
 </body>
 

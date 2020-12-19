@@ -58,7 +58,7 @@
                     </th>
                     <th>
                         <a href="" ng-click="sortBy('email')">
-                            Email
+                            Số tin đã đăng
                             <span ng-show="propertyName === 'email'" ng-class="{reverse: reverse}"
                                 class="sortOrderList"></span>
                         </a>
@@ -76,22 +76,22 @@
                     <td class="text-left">{{item.email}}</td>
                     <td class="row">
                         <button type="button" title="Chỉnh sửa tài khoản" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" ng-click="getUser(item.id)">
-                                    <i class="fal fa-edit"></i>
-                                </button> &nbsp;
+                            <i class="fal fa-edit"></i>
+                        </button> &nbsp;
                         <button type="button" title="Xóa tài khoản" class="btn btn-danger" data-toggle="modal" data-target="#warningDelete" ng-click="getUser(item.id)">
-                                    <i class="fal fa-trash"></i>
-                                </button> &nbsp;
+                            <i class="fal fa-trash"></i>
+                        </button> &nbsp;
                         <button type="button" title="Khóa tài khoản" class="btn btn-danger" data-toggle="modal" data-target="#warningBlock" ng-if="users[$index].status != 'block'" ng-click="getUser(item.id)">
-                                    <i class="fal fa-ban"></i>
-                                </button>
+                            <i class="fal fa-ban"></i>
+                        </button>
                         <button type="button" title="Mở khóa tài khoản" class="btn btn-success" data-toggle="modal" data-target="#warningActive" ng-if="users[$index].status == 'block'" ng-click="getUser(item.id)">
-                                    <i class="fad fa-shield-check"></i>
-                                </button>
+                            <i class="fad fa-shield-check"></i>
+                        </button>
                     </td>
                     <td>
                         <button type="button" title="Xem chi tiết" class="btn" data-toggle="modal" data-target="#showInformation" ng-click="getUser(item.id)">
-                                    <i class="fal fa-external-link"></i>
-                                </button>
+                            <i class="fal fa-external-link"></i>
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -112,7 +112,9 @@
                                 </button>
                 </div>
                 <div class="modal-body">
-                    <img ng-src="http://localhost:8080/getimage/{{user.username}}/user" class="card-img-top" alt="{{user.username}}" style="width: 200px; height: 200px;">
+                    <div class="form-group text-center">
+                        <img ng-src="http://localhost:8080/getimage/{{user.username}}/user" class="card-img-top" alt="{{user.username}}" style="width: 200px; height: 200px;">
+                    </div>
                     <div class="card-body text-left">
                         <div class="form-group">
                             <span ng-if="user.gender == false" title="Giới tính"><i
@@ -147,6 +149,41 @@
                             <span ng-if="user.status == 'block'">Đã bị khóa</span>
                             </span>
                         </div>
+                        <div ng-if="postings[0].id != null">
+                            <hr>
+                            <h4>Tổng số bài đã đăng: {{postings.length}}</h4>
+                            <div class="list-group">
+                                <div class="list-group-item flex-column align-items-start" ng-repeat="item in postings">
+                                    <div class="text-center">
+                                        <h5 class="mb-1">Id: {{item.id}} - {{item.postings[0].title}}</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small>Số tiền: {{item.postings[0].price | currency : "" : 0}}</small>
+                                        </div>
+                                        <div class="col">
+                                            <small>Ngày đăng: {{item.date | date : 'dd/MM/yyyy'}}</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small ng-if="item.status == 'unapproved'">Trạng thái: Chưa duyệt</small>
+                                            <small ng-if="item.status == 'approved'">Trạng thái: Đã duyệt</small>
+                                            <small ng-if="item.status == 'sold'">Trạng thái: Đã bán</small>
+                                            <small ng-if="item.status == 'block'">Trạng thái: Bị khóa</small>
+                                        </div>
+                                        <div class="col">
+                                            <small>Danh mục: {{item.product.postings.name}}</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small>Địa chỉ: {{item.postings[0].address}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -162,7 +199,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title" id="exampleModalLabel">
-                        Bạn có chắc chắn xóa người dùng <b>{{user.fullname}}</b> không?
+                        Bạn có chắc chắn xóa người dùng <b>{{user.fullname}}</b> không?<br> Note: Tất cả bài đăng của <b>{{user.fullname}}</b> sẽ xóa bị xóa!
                     </h6>
                 </div>
                 <div class="modal-footer">
@@ -252,7 +289,8 @@
                             <label>Hình ảnh:</label><br>
                             <img ng-src="http://localhost:8080/getimage/{{user.username}}/user" class="card-img-top mb-1" alt="{{user.username}}" style="width: 150px; height: 150px;"><br>
                             <input type="file" file-model="myForm.files[0]" id="uploadFile" style="display: none" />
-                            <label for="uploadFile" class="btn btn-outline-primary"><i class="fad fa-file-upload"></i> Chọn ảnh</label>
+                            <label for="uploadFile" class="btn btn-outline-primary"><i
+                                                class="fad fa-file-upload"></i> Chọn ảnh</label>
 
                         </div>
                         <div class="form-group mb-1">

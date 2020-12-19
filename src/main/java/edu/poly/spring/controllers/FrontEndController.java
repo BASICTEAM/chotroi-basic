@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,9 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.poly.spring.dtos.ShowRate;
+import edu.poly.spring.dtos.UserLoginDTO;
+import edu.poly.spring.helpers.UserLogin;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
 import edu.poly.spring.models.PostingSaved;
@@ -63,12 +70,15 @@ public class FrontEndController {
 
 	@Autowired
 	private PostingDetailService postingDetailService;
-	
+
 	@Autowired
 	private PostingSavedService postingSavedService;
 
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
+
+	@Autowired
+	private JavaMailSender emailSender;
 
 	// -------------------------
 	// ------ LIBS MANAGER -----
@@ -130,6 +140,18 @@ public class FrontEndController {
 
 	@DeleteMapping("/users/{id}/delete")
 	public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id) {
+		Optional<User> user = userService.findById(id);
+		List<Posting> postings = postingService.findByUser(user.get());
+		if (postings.size() != 0) {
+			for (Posting posting : postings) {
+				List<PostingDetail> postingsDetail = postingDetailService.findByPostingId(posting.getId());
+				for (PostingDetail postingDetail : postingsDetail) {
+					postingDetailService.deleteById(postingDetail.getId());
+				}
+				postingService.deleteById(posting.getId());
+			}
+		}
+
 		userService.deleteById(id);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
@@ -199,6 +221,18 @@ public class FrontEndController {
 
 	@DeleteMapping("/shops/{id}/delete")
 	public ResponseEntity<Void> deleteShop(@PathVariable("id") Integer id) {
+		Optional<Shop> shop = shopService.findById(id);
+		List<Posting> postings = postingService.findByShop(shop.get());
+		if (postings.size() != 0) {
+			for (Posting posting : postings) {
+				List<PostingDetail> postingsDetail = postingDetailService.findByPostingId(posting.getId());
+				for (PostingDetail postingDetail : postingsDetail) {
+					postingDetailService.deleteById(postingDetail.getId());
+				}
+				postingService.deleteById(posting.getId());
+			}
+		}
+
 		shopService.deleteById(id);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
@@ -280,6 +314,82 @@ public class FrontEndController {
 		return postingService.findPostingsByStatus("block");
 	}
 
+	@RequestMapping("/postings/list-sold/{id}")
+	public List<Posting> findStatusSoldByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("sold", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("sold", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-approved/{id}")
+	public List<Posting> findStatusApprovedByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("approved", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("approved", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-unapproved/{id}")
+	public List<Posting> findStatusUnapprovedByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("unapproved", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("unapproved", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-block/{id}")
+	public List<Posting> findStatusBlockByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("block", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("block", shop.get());
+		}
+
+		return listPostings;
+	}
+
 	@GetMapping("/postings/{id}/get")
 	public Optional<Posting> getPosting(@PathVariable("id") Integer id) {
 		return postingService.findById(id);
@@ -325,29 +435,49 @@ public class FrontEndController {
 
 	@GetMapping("postings/{id}/find-by-product")
 	public List<Posting> getPostingsByProduct(@PathVariable("id") Integer id) {
-		return postingService.findPostingsByProductId(id);
+		List<Posting> postings = postingService.findPostingsByProductId(id);
+		Collections.sort(postings);
+		return postings;
 	}
 
 	@GetMapping("postings/{id}/find-by-user")
 	public List<Posting> getPostingsByUser(@PathVariable("id") Integer id) {
+		List<Posting> listPosting = new ArrayList<Posting>();
 
 		Optional<User> user = userService.findById(id);
 		Optional<Shop> shop = shopService.findById(id);
 
 		if (user.isPresent()) {
-			return postingService.findByUser(user.get());
+			listPosting = postingService.findByUser(user.get());
+			if (listPosting.size() == 0) {
+				listPosting.add(new Posting(null, false, null, null, user.get(), null, null, null));
+			}
+			Collections.sort(listPosting);
+			return listPosting;
 		}
 
 		if (shop.isPresent()) {
-			return postingService.findByShop(shop.get());
+			listPosting = postingService.findByShop(shop.get());
+			if (listPosting.size() == 0) {
+				listPosting.add(new Posting(null, false, null, null, null, shop.get(), null, null));
+			}
+			Collections.sort(listPosting);
+			return listPosting;
 		}
 
-		return new ArrayList<Posting>();
+		return null;
 	}
 
-	@GetMapping("postings/find-top16-sort-date")
-	public List<Posting> getPostingTop16SortDate() {
-		return postingService.findTop16ByOrderByDateDesc();
+	@GetMapping("postings/find-top31-sort-date")
+	public List<Posting> getPostingTop31SortDate() {
+		List<Posting> listPostings = new ArrayList<Posting>();
+		List<Posting> postings = postingService.findTop31ByOrderByIdDesc();
+		for (Posting posting : postings) {
+			if (posting.getStatus().equals("approved")) {
+				listPostings.add(posting);
+			}
+		}
+		return listPostings;
 	}
 
 	// -------------------------
@@ -361,7 +491,9 @@ public class FrontEndController {
 
 	@GetMapping("postingdetails/{title}/find-by-title")
 	public List<PostingDetail> getPostingDetailsByTitle(@PathVariable("title") String title) {
-		return postingDetailService.findPostingDetailByTitleContaining(title);
+		List<PostingDetail> postingDetails = postingDetailService.findPostingDetailByTitleContaining(title);
+		Collections.sort(postingDetails);
+		return postingDetails;
 	}
 
 	// -------------------------
@@ -370,7 +502,19 @@ public class FrontEndController {
 
 	@GetMapping("postingdetails/search")
 	public List<PostingDetail> getPostingsByKeyword(@RequestParam(name = "keyword") String keyword) {
-		return postingDetailService.findPostingDetailByTitleContaining(keyword);
+		List<PostingDetail> listPostingsDetail = new ArrayList<PostingDetail>();
+		List<PostingDetail> postingsDetail = postingDetailService.findPostingDetailByTitleContaining(keyword);
+
+		System.out.println(postingsDetail.size());
+		for (PostingDetail postingDetail : postingsDetail) {
+			if (postingDetail.getPosting().getStatus().equals("approved")) {
+				System.out.println(postingDetail.getPosting().getStatus());
+				listPostingsDetail.add(postingDetail);
+			}
+		}
+		
+		Collections.sort(listPostingsDetail);
+		return listPostingsDetail;
 	}
 
 	@GetMapping("postings-detail-by-product-type/search")
@@ -384,10 +528,16 @@ public class FrontEndController {
 		for (Product product : products) {
 			List<Posting> postings = postingService.findPostingsByProductId(product.getId());
 			for (Posting posting : postings) {
-				PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
-				postingDetails.add(pd);
+				if (posting.getStatus().equals("approved")) {
+					PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
+					if (pd != null) {
+						postingDetails.add(pd);
+					}
+				}
 			}
 		}
+
+		Collections.sort(postingDetails);
 
 		return postingDetails;
 	}
@@ -397,41 +547,121 @@ public class FrontEndController {
 		List<PostingDetail> postingDetails = new ArrayList<PostingDetail>();
 		List<Posting> postings = postingService.findPostingsByProductId(id);
 		for (Posting posting : postings) {
-			PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
-			postingDetails.add(pd);
+			if (posting.getStatus().equals("approved")) {
+				PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
+				postingDetails.add(pd);
+			}
 		}
+
+		Collections.sort(postingDetails);
+
 		return postingDetails;
 	}
-	
-	@GetMapping("postings/{address}")
+
+	@GetMapping("postingsdetail-by-address/{address}")
 	public List<PostingDetail> getPostings(@PathVariable("address") String address) {
 		List<PostingDetail> postingDetails = new ArrayList<PostingDetail>();
-		
-		String[] parts = address.split(",");
-		String part1 = parts[0];
-		String part2 = parts[1].substring(1);
-		String part3 = parts[2].substring(1);
-		
-		if (!part1.equals("")) {
-			List<PostingDetail> listPD = (List<PostingDetail>) postingDetailService.findAll();
-			for (int i = 0; i < listPD.size(); i++) {
-				System.out.println("|" + listPD.get(i).getAddress());
-				if ((listPD.get(i).getAddress()).contains(part1)) {
-					postingDetails.add(listPD.get(i));
-				}
+		List<PostingDetail> listPD = (List<PostingDetail>) postingDetailService.findAll();
+		for (int i = 0; i < listPD.size(); i++) {
+			if ((listPD.get(i).getAddress()).contains(address)) {
+				postingDetails.add(listPD.get(i));
 			}
-			
 		}
-		
-		if (part2.equals("")) {
-			
-		}
+
 		return postingDetails;
 	}
-	
+
+	@GetMapping("report/{report}&{postingDetailId}")
+	public ResponseEntity<Void> report(@PathVariable(name = "report") String report,
+			@PathVariable(name = "postingDetailId") Integer postingDetailId) {
+
+		String assessor = "";
+		String supplyUnit = "";
+
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			assessor = user.getUsername();
+		}
+
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			assessor = shop.getUsername();
+		}
+
+		Optional<PostingDetail> postingDetail = postingDetailService.findById(postingDetailId);
+		if (postingDetail.get().getPosting().getUser() != null) {
+			supplyUnit = postingDetail.get().getPosting().getUser().getUsername();
+		}
+
+		if (postingDetail.get().getPosting().getShop() != null) {
+			supplyUnit = postingDetail.get().getPosting().getShop().getUsername();
+		}
+
+		if (report.equals("paid")) {
+			String text = "Thông tin sản phẩm được " + supplyUnit + " đăng bán tại liên kết: http://localhost:8080/"
+					+ postingDetailId + " đã được giao dịch.\n" + "Người dùng " + assessor
+					+ " đề nghị admin xóa thông tin sản phẩm này.";
+
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo("chotroi.basic@gmail.com");
+			message.setSubject("[Report] Tin đã được thực hiện giao dịch");
+			message.setText(text);
+			this.emailSender.send(message);
+
+		}
+		if (report.equals("spam")) {
+			String text = "Thông tin sản phẩm được " + supplyUnit + " đăng bán tại liên kết: http://localhost:8080/"
+					+ postingDetailId + " là tin rác được đăng với mục đích spam.\n" + "Người dùng " + assessor
+					+ " đề nghị admin xóa thông tin sản phẩm này.";
+
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo("chotroi.basic@gmail.com");
+			message.setSubject("[Report] Tin rác");
+			message.setText(text);
+			this.emailSender.send(message);
+
+		}
+		if (report.equals("violate")) {
+			String text = "Thông tin sản phẩm được " + supplyUnit + " đăng bán tại liên kết: http://localhost:8080/"
+					+ postingDetailId + " đã vi phạm quy tắc đăng tin của trang web.\n" + "Người dùng " + assessor
+					+ " đề nghị admin xóa thông tin sản phẩm này.";
+
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo("chotroi.basic@gmail.com");
+			message.setSubject("[Report] Tin vi phạm quy tắc");
+			message.setText(text);
+			this.emailSender.send(message);
+		}
+
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+
+	// -------------------------
+	// ------ POSTING SAVED MANAGER -----
+	// -------------------------
+
 	@GetMapping("posting-saved/find-all")
 	public List<PostingSaved> savePostingSaved() {
 		return (List<PostingSaved>) postingSavedService.findAll();
+	}
+
+	@GetMapping("postings-by-username/{username}")
+	public List<Posting> getPostingsByUsername(@PathVariable("username") String username) {
+		List<PostingSaved> postingSaveds = postingSavedService.findPostingSavedByAssessor(username);
+
+		List<Posting> postings = new ArrayList<Posting>();
+
+		for (PostingSaved postingSaved : postingSaveds) {
+			Optional<PostingDetail> pd = postingDetailService.findById(postingSaved.getPostingID());
+			postings.add(pd.get().getPosting());
+		}
+
+		return postings;
+	}
+
+	@GetMapping("postingssaved-by-username/{username}")
+	public List<PostingSaved> getPostingsSavedByUsername(@PathVariable("username") String username) {
+		return postingSavedService.findPostingSavedByAssessor(username);
 	}
 
 }

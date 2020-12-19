@@ -42,6 +42,10 @@ public interface PostingService {
 
 	List<Posting> findByUser(User user);
 
-	List<Posting> findTop16ByOrderByDateDesc();
+	List<Posting> findTop31ByOrderByIdDesc();
+
+	List<Posting> findPostingsByStatusAndShop(String name, Shop shop);
+
+	List<Posting> findPostingsByStatusAndUser(String name, User user);
 
 }

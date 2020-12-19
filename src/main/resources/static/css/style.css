@@ -24,16 +24,16 @@
 
 /* navbar */
 
-.navbar {
+.navbar-admin {
     font-size: 15px;
     background-color: #ffc13b !important;
 }
 
-.navbar li a {
+.navbar-admin li a {
     color: #1e3d59 !important;
 }
 
-.navbar li a:hover {
+.navbar-admin li a:hover {
     color: white !important;
 }
 
@@ -42,7 +42,7 @@
     color: black;
 }
 
-.navbar-toggler {
+.button-navbar-toggler {
     border-radius: 5px !important;
 }
 
@@ -342,7 +342,20 @@
     }
 }
 
-@media ( min-width: 1366px) {
+@media (min-width: 1366px) {
+    .card-category-title {
+        font-size: 29px;
+    }
+    .card-category-title-show {
+        font-size: 29px;
+    }
+    .card-category-overlay {
+    font-size: 25px;
+    line-height: 45px;
+    }
+}
+
+@media only screen and  (max-width: 1920px) {
     .card-category-title {
         font-size: 21px;
     }
@@ -350,8 +363,8 @@
         font-size: 21px;
     }
     .card-category-overlay {
-        font-size: 17px;
-        line-height: 40px;
+    font-size: 15px;
+    line-height: 32px;
     }
 }
 
@@ -834,6 +847,15 @@ hr.light {
     color: white;
 }
 
+@media only screen and (max-width: 992px) {
+	.register-image {
+        display: none;
+    }
+    .sub-title-register {
+        display: none;
+    } 
+}
+
 @media all and (min-width: 320px) {
     .background-register {
         background-color: #ff6e40;
@@ -850,12 +872,12 @@ hr.light {
         margin-top: 0;
         margin-right: 0;
     }
-    .register-image {
+   /*  .register-image {
         display: none;
     }
     .sub-title-register {
         display: none;
-    }
+    } */
     .title-register {
         font-size: 22px;
         text-transform: uppercase;
@@ -924,6 +946,7 @@ hr.light {
         margin-left: 10vh;
     }
 }
+
 
 @media all and (min-width: 1920px) {
     .register-container {
@@ -1616,10 +1639,19 @@ hr.light {
     font-size: 16px;
 }
 
-.filtered-product-button-save-posting>button {
+.filtered-product-button-search-posting>button {
     position: absolute;
-    margin-top: -35px;
-    margin-left: -20px;
+    margin-top: -45px;
+    margin-left: -15px;
+    font-size: 30px;
+    color: #dc3545;
+}
+
+.filtered-product-button-search-posting>button:hover {
+    color: #df1313;
+}
+
+.filtered-product-button-save-posting>button {
     font-size: 30px;
     color: #dc3545;
 }
@@ -1638,10 +1670,25 @@ hr.light {
     color: #df1313;
 }
 
+.posting-saved-button-save-posting {
+    position: absolute;
+    margin-top: -35px;
+    margin-left: -20px;
+    padding: 0px;
+    margin-right: 5px;
+    font-size: 30px;
+    color: #dc3545;
+}
+
+.posting-saved-button-save-posting:hover {
+    color: #df1313;
+}
+
 .btn-group-filter-choose {
     font-size: 13px;
     border-radius: 7px !important;
-    margin: 10px;
+    /* margin: 10px; */
+    /* width: 120px; */
 }
 
 .card-body>a:hover {
@@ -1833,6 +1880,7 @@ aside {
 
 .card-postingdetail-phone>button:hover {
     background-color: black;
+    text-decoration: none;
     color: white;
     border: 0px;
 }
@@ -1848,7 +1896,8 @@ aside {
     background-color: white;
     /* margin: 2px; */
     padding: 3px;
-    font-size: 10px;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .card-postingdetail-upload>label {
@@ -1863,6 +1912,7 @@ aside {
 
 .card-postingdetail-report>button:hover {
     background-color: red;
+    text-decoration: none;
     color: white;
 }
 
@@ -2259,7 +2309,7 @@ aside {
 }
 
 .textdanhgia1 {
-    color: #cfc6b3;
+    color: #c9bb9c;
     padding-right: 4px;
 }
 
@@ -2304,6 +2354,38 @@ aside {
     background-color: rgb(19, 151, 78);
 }
 
+.profile-button-update {
+    position: absolute;
+    margin-top: -20px;
+    margin-left: -20px;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 50% !important;
+    background-color: white;
+    padding: 3px 7px;
+}
+
+.profile-button-update:hover {
+    color: white;
+    background-color: #007bff;
+}
+
+.profile-button-update2 {
+    position: absolute;
+    margin-top: -20px;
+    margin-left: -60px;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 50% !important;
+    background-color: white;
+    padding: 3px 7px;
+}
+
+.profile-button-update2:hover {
+    color: white;
+    background-color: #007bff;
+}
+
 .filtered-products-card-profile {
     border: 0px;
     border-radius: 2px !important;
@@ -2317,6 +2399,10 @@ aside {
 
 
 /* end user page */
+
+.modal-header-currency {
+    margin-right: 0px !important;
+}
 
 
 /*Media Query*/

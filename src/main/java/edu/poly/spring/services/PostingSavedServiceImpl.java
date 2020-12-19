@@ -1,5 +1,6 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,11 @@ public class PostingSavedServiceImpl implements PostingSavedService{
 
 	@Autowired
 	PostingSavedRepository postingSavedRepository;
+
+	@Override
+	public List<PostingSaved> findPostingSavedByAssessor(String assessor) {
+		return postingSavedRepository.findPostingSavedByAssessor(assessor);
+	}
 
 	@Override
 	public PostingSaved findByAssessor(String assessor) {

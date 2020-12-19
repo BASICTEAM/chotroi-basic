@@ -1,5 +1,6 @@
 package edu.poly.spring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import edu.poly.spring.models.PostingSaved;
@@ -29,5 +30,7 @@ public interface PostingSavedService {
 	<S extends PostingSaved> S save(S entity);
 
 	PostingSaved findByAssessor(String assessor);
+
+	List<PostingSaved> findPostingSavedByAssessor(String assessor);
 
 }

@@ -65,6 +65,7 @@ var app = angular
     function(userFactory, $scope, $http) {
         $scope.users = [];
         $scope.user = {};
+        $scope.postings = [];
         $scope.titleContent = '';
 
         $scope.currentPage = 1;
@@ -142,6 +143,13 @@ var app = angular
                     console.log(reason);
                 }
             );
+            userFactory.getPostingsById(id).then(
+                data => {
+                    $scope.postings = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            )
         };
 
         $scope.update = function(id) {
