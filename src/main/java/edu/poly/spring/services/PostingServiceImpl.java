@@ -18,6 +18,16 @@ public class PostingServiceImpl implements PostingService {
 	private PostingRepository postingRepository;
 
 	@Override
+	public List<Posting> findPostingsByStatusAndUser(String name, User user) {
+		return postingRepository.findPostingsByStatusAndUser(name, user);
+	}
+
+	@Override
+	public List<Posting> findPostingsByStatusAndShop(String name, Shop shop) {
+		return postingRepository.findPostingsByStatusAndShop(name, shop);
+	}
+
+	@Override
 	public List<Posting> findTop16ByOrderByDateDesc() {
 		return postingRepository.findTop16ByOrderByDateDesc();
 	}

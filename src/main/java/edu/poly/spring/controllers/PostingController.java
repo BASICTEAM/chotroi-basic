@@ -36,6 +36,7 @@ import edu.poly.spring.dtos.RateDTO;
 import edu.poly.spring.dtos.ShowRate;
 import edu.poly.spring.dtos.UserLoginDTO;
 import edu.poly.spring.helpers.UserLogin;
+import edu.poly.spring.models.ChatBox;
 import edu.poly.spring.models.Posting;
 import edu.poly.spring.models.PostingDetail;
 import edu.poly.spring.models.PostingSaved;
@@ -566,7 +567,7 @@ public class PostingController {
 			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
 			return "logins/login";
 		}
-		
+
 		// SET USER ĐĂNG NHẬP
 		if (UserLogin.ROLE_USER.equals("user")) {
 			User user = UserLogin.USER;
@@ -581,7 +582,6 @@ public class PostingController {
 			model.addAttribute("shopLogin", shop);
 		}
 
-		
 		// KIỂM TRA DANH MỤC SẢN PHẨM
 		if (productName.equals("") || productName == null) {
 			PostingDetailDto pdd = new PostingDetailDto();
@@ -592,7 +592,7 @@ public class PostingController {
 			model.addAttribute("postingDetailDto", pdd);
 			model.addAttribute("messageError", "Bạn chưa chọn danh mục sản phẩm!");
 			return "postings/posting";
-		}		
+		}
 
 		// KIỂM TRA GIÁ CẢ SẢN PHẨM
 		strPrice = strPrice.replace("$", "").replace(",", "");
@@ -607,10 +607,10 @@ public class PostingController {
 				model.addAttribute("messageError", "Bạn chưa nhập giá cả sản phẩm!");
 				return "postings/posting";
 			}
-	        double douPrice = Double.parseDouble(strPrice);
-	        postingDetailDto.setPrice(douPrice);
-	    } catch (NumberFormatException nfe) {
-	    	PostingDetailDto pdd = new PostingDetailDto();
+			double douPrice = Double.parseDouble(strPrice);
+			postingDetailDto.setPrice(douPrice);
+		} catch (NumberFormatException nfe) {
+			PostingDetailDto pdd = new PostingDetailDto();
 			pdd.setTitle(postingDetailDto.getTitle());
 			pdd.setManufacturer(postingDetailDto.getManufacturer());
 			pdd.setProduct_type(postingDetailDto.getProduct_type());
@@ -618,20 +618,23 @@ public class PostingController {
 			model.addAttribute("postingDetailDto", pdd);
 			model.addAttribute("messageError", "Giá cả sản phẩm nhập không đúng định dạng!");
 			return "postings/posting";
-	    }
-		
+		}
+
 		// CHUYỂN ĐỔI ĐỊA CHỈ
 		String address = addressTinhThanhPho;
 		if (addressPhuongXa != null || addressPhuongXa.equals("")) {
+			System.out.println(addressPhuongXa);
+			address = "";
 			address = addressPhuongXa + ", " + addressQuanHuyen + ", " + addressTinhThanhPho;
-		}
-		if (addressQuanHuyen != null || addressQuanHuyen.equals("")) {
+		}else {
+			System.out.println(addressQuanHuyen);
+			address = "";
 			address = addressQuanHuyen + ", " + addressTinhThanhPho;
 		}
-		
+
 		System.out.println(address);
-		
-		//KIỂM TRA ĐỊA CHỈ SẢN PHẨM
+
+		// KIỂM TRA ĐỊA CHỈ SẢN PHẨM
 		if (address.equals("") || address == null || address.equals(", ")) {
 			PostingDetailDto pdd = new PostingDetailDto();
 			pdd.setTitle(postingDetailDto.getTitle());
@@ -642,7 +645,7 @@ public class PostingController {
 			model.addAttribute("messageError", "Bạn chưa chọn địa chỉ của sản phẩm!");
 			return "postings/posting";
 		}
-		
+
 		// KIỂM TRA TẤT CẢ BẢN TIN
 		if (result.hasErrors()) {
 			System.out.println(result);
@@ -684,7 +687,7 @@ public class PostingController {
 		postingDetail.setAddress(address);
 
 		Path path = Paths.get("images/");
-		
+
 		try (InputStream inputStream = postingDetailDto.getPhoto1().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto1().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -701,7 +704,7 @@ public class PostingController {
 			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
 			return "postings/posting";
 		}
-		
+
 		try (InputStream inputStream = postingDetailDto.getPhoto2().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto2().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -718,7 +721,7 @@ public class PostingController {
 			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
 			return "postings/posting";
 		}
-		
+
 		try (InputStream inputStream = postingDetailDto.getPhoto3().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto3().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -735,7 +738,7 @@ public class PostingController {
 			model.addAttribute("messageError", "Hình ảnh tải lên tối thiếu phải là 3 hình ảnh!");
 			return "postings/posting";
 		}
-		
+
 		try (InputStream inputStream = postingDetailDto.getPhoto4().getInputStream()) {
 			Files.copy(inputStream, path.resolve(postingDetailDto.getPhoto4().getOriginalFilename()),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -751,19 +754,19 @@ public class PostingController {
 		} else {
 			postingDetail.setPicture1(postingDetailDto.getPhoto1().getOriginalFilename());
 		}
-		
+
 		if (postingDetailDto.getPhoto2().getOriginalFilename().equals("")) {
 			postingDetail.setPicture2(image2);
 		} else {
 			postingDetail.setPicture2(postingDetailDto.getPhoto2().getOriginalFilename());
 		}
-		
+
 		if (postingDetailDto.getPhoto3().getOriginalFilename().equals("")) {
 			postingDetail.setPicture3(image3);
 		} else {
 			postingDetail.setPicture3(postingDetailDto.getPhoto3().getOriginalFilename());
 		}
-		
+
 		if (postingDetailDto.getPhoto4().getOriginalFilename().equals("")) {
 			postingDetail.setPicture4(image4);
 		} else {
@@ -797,7 +800,8 @@ public class PostingController {
 			model.addAttribute("user", null);
 			model.addAttribute("userLogin", null);
 			model.addAttribute("shopLogin", null);
-
+			
+			model.addAttribute("postingDetailDto", new PostingDetailDto());
 			return "postings/profile";
 		}
 
@@ -816,8 +820,310 @@ public class PostingController {
 			model.addAttribute("userLogin", UserLogin.USER);
 			model.addAttribute("shopLogin", null);
 		}
+		model.addAttribute("postingDetailDto", new PostingDetailDto());
 
 		return "postings/profile";
 	}
 
+	@GetMapping("/chatuser/{id}")
+	public String chatuser(ModelMap model, @PathVariable(name = "id") Integer id) {
+		String mes = null, userc = null, shopc = null;
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		}
+
+		// User chat voi User
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			iduser = user.getId();
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+
+			Optional<User> optUser = userService.findById(id);
+			if (optUser.isPresent()) {
+				model.addAttribute("shop", optUser.get());
+				idshop = id;
+			} else {
+				return "postings/postingDetails";
+			}
+			Optional<User> optUser2 = userService.findById(iduser);
+			if (optUser2.isPresent()) {
+				model.addAttribute("user", optUser2.get());
+				sender = optUser2.get().getFullname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	select time, message \r\n" + "	from chatboxs  \r\n"
+					+ "	where chatboxs.iduser=" + iduser + " and chatboxs.iduser2=" + id + " or chatboxs.iduser=" + id
+					+ "and chatboxs.iduser2=" + iduser);
+
+			userc = "uvsu";
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("select distinct chat.iduser,chat.idshop,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
+					+ "					 where chat.iduser =" + iduser);
+			List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+
+			}
+			Session session2 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query2 = session2.createSQLQuery("select distinct chat.iduser,chat.iduser2,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join users us on us.id = chat.iduser2 \r\n"
+					+ "					 where chat.iduser =" + iduser);
+			List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+			for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+				Object[] records2 = (Object[]) iterator2.next();
+
+			}
+			Session session3 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query3 = session3.createSQLQuery("select distinct chat.iduser2,chat.iduser,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join users us on us.id = chat.iduser \r\n"
+					+ "					 where chat.iduser2 =" + iduser);
+			List<Object[]> listchatuser2 = ((org.hibernate.query.Query) query3).list();
+			for (Iterator iterator3 = listchatuser2.iterator(); iterator3.hasNext();) {
+				Object[] records2 = (Object[]) iterator3.next();
+
+			}
+			model.addAttribute("arrays", list1);
+			model.addAttribute("listchatshop", listchatshop);
+			model.addAttribute("listchatuser", listchatuser);
+			model.addAttribute("listchatuser2", listchatuser2);
+			model.addAttribute("mes", mes);
+			model.addAttribute("userc", userc);
+			model.addAttribute("shopc", shopc);
+			type = "uservsuser";
+			model.addAttribute("chatbox", new ChatBox());
+			return "homes/chat";
+		}
+//      Shop chat voi User
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			iduser = shop.getId();
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+
+			Optional<User> optUser = userService.findById(id);
+			if (optUser.isPresent()) {
+				model.addAttribute("user", optUser.get());
+				idshop = id;
+			} else {
+				return "postings/postingDetails";
+			}
+			Optional<Shop> optShop = shopService.findById(iduser);
+			if (optShop.isPresent()) {
+				model.addAttribute("shop", optShop.get());
+				sender = optShop.get().getShopname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
+					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
+					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where users.id=" + id
+					+ " and shops.id=" + iduser);
+
+			mes = "khac";
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("select distinct chat.idshop,chat.idshop2,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop2 \r\n"
+					+ "					 where chat.idshop =" + iduser);
+			List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+
+			}
+			Session session2 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query2 = session2.createSQLQuery("select distinct chat.idshop,chat.iduser,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join users us on us.id = chat.iduser \r\n"
+					+ "					 where chat.idshop =" + iduser);
+			List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+			for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+				Object[] records2 = (Object[]) iterator2.next();
+
+			}
+
+			model.addAttribute("arrays", list1);
+			model.addAttribute("listchatshop", listchatshop);
+			model.addAttribute("listchatuser", listchatuser);
+			model.addAttribute("mes", mes);
+			model.addAttribute("userc", userc);
+			model.addAttribute("shopc", shopc);
+			type = "shopvsuser";
+			model.addAttribute("chatbox", new ChatBox());
+		}
+
+		return "homes/chat";
+	}
+
+	@GetMapping("/chatshop/{id}")
+	public String chatshop(ModelMap model, @PathVariable(name = "id") Integer id) {
+		String mes = null, shopc = null, userc = null;
+		if (!UserLogin.authenticated_shop() && !UserLogin.authenticated_user()) {
+			model.addAttribute("userLoginDTO", new UserLoginDTO());
+			model.addAttribute("message", "Vui lòng đăng nhập để truy cập!");
+			return "logins/login";
+		}
+
+//  User chat voi Shop
+		if (UserLogin.ROLE_USER.equals("user")) {
+			User user = UserLogin.USER;
+			iduser = user.getId();
+			model.addAttribute("user", user);
+			model.addAttribute("userLogin", user);
+			model.addAttribute("shopLogin", null);
+
+			Optional<Shop> optShop = shopService.findById(id);
+			if (optShop.isPresent()) {
+				model.addAttribute("shop", optShop.get());
+				idshop = id;
+			} else {
+				return "postings/postingDetails";
+			}
+			Optional<User> optUser = userService.findById(iduser);
+			if (optUser.isPresent()) {
+				model.addAttribute("user", optUser.get());
+				sender = optUser.get().getFullname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	SELECT chatboxs.time , chatboxs.message \r\n"
+					+ "	FROM     chatboxs INNER JOIN \r\n" + "	shops ON chatboxs.idshop = shops.id INNER JOIN \r\n"
+					+ "	users ON chatboxs.iduser = users.id \r\n" + "					 where shops.id=" + id
+					+ " and users.id=" + iduser);
+
+			mes = "khac";
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("select distinct chat.iduser,chat.idshop,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
+					+ "					 where chat.iduser =" + iduser);
+			List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+
+			}
+			Session session2 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query2 = session2.createSQLQuery("select distinct chat.iduser,chat.iduser2,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join users us on us.id = chat.iduser2 \r\n"
+					+ "					 where chat.iduser =" + iduser);
+			List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+			for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+				Object[] records2 = (Object[]) iterator2.next();
+
+			}
+			model.addAttribute("arrays", list1);
+			model.addAttribute("listchatshop", listchatshop);
+			model.addAttribute("listchatuser", listchatuser);
+			model.addAttribute("mes", mes);
+			model.addAttribute("userc", userc);
+			model.addAttribute("shopc", shopc);
+			type = "uservsshop";
+			model.addAttribute("chatbox", new ChatBox());
+		}
+//                  Shop chat vs Shop
+		if (UserLogin.ROLE_USER.equals("shop")) {
+			Shop shop = UserLogin.SHOP;
+			iduser = shop.getId();
+			model.addAttribute("user", shop);
+			model.addAttribute("userLogin", null);
+			model.addAttribute("shopLogin", shop);
+
+			Optional<Shop> optShop = shopService.findById(id);
+			if (optShop.isPresent()) {
+				model.addAttribute("user", optShop.get());
+				idshop = id;
+			} else {
+				return "postings/postingDetails";
+			}
+			Optional<Shop> optShop1 = shopService.findById(iduser);
+			if (optShop1.isPresent()) {
+				model.addAttribute("shop", optShop1.get());
+				sender = optShop1.get().getShopname();
+			} else {
+				return "postings/postingDetails";
+			}
+			Session session1 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query1 = session1.createSQLQuery("	select time, message \r\n" + "	from chatboxs  \r\n"
+					+ "	where chatboxs.idshop=" + iduser + " and chatboxs.idshop2=" + id + " or chatboxs.idshop=" + id
+					+ "and chatboxs.idshop2=" + iduser);
+
+			shopc = "svss";
+			List<Object[]> list1 = ((org.hibernate.query.Query) query1).list();
+			for (Iterator iterator1 = list1.iterator(); iterator1.hasNext();) {
+				Object[] records1 = (Object[]) iterator1.next();
+				System.out.println("=======" + records1[0]);
+				System.out.println("=======" + records1[1]);
+
+			}
+
+			Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query = session.createSQLQuery("select distinct chat.idshop,chat.idshop2,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop2 \r\n"
+					+ "					 where chat.idshop =" + iduser);
+			List<Object[]> listchatshop = ((org.hibernate.query.Query) query).list();
+			for (Iterator iterator = listchatshop.iterator(); iterator.hasNext();) {
+				Object[] records = (Object[]) iterator.next();
+
+			}
+			Session session3 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query3 = session3.createSQLQuery("select distinct chat.idshop2,chat.idshop,shop.shopname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join shops shop on shop.id = chat.idshop \r\n"
+					+ "					 where chat.idshop2 =" + iduser);
+			List<Object[]> listchatshop2 = ((org.hibernate.query.Query) query3).list();
+			for (Iterator iterator3 = listchatshop2.iterator(); iterator3.hasNext();) {
+				Object[] records = (Object[]) iterator3.next();
+
+			}
+			Session session2 = entityManagerFactory.createEntityManager().unwrap(Session.class);
+			Query query2 = session2.createSQLQuery("select distinct chat.idshop,chat.iduser,us.fullname \r\n"
+					+ "	from chatboxs chat \r\n" + "	join users us on us.id = chat.iduser \r\n"
+					+ "					 where chat.idshop =" + iduser);
+			List<Object[]> listchatuser = ((org.hibernate.query.Query) query2).list();
+			for (Iterator iterator2 = listchatuser.iterator(); iterator2.hasNext();) {
+				Object[] records2 = (Object[]) iterator2.next();
+
+			}
+			model.addAttribute("arrays", list1);
+			model.addAttribute("listchatshop", listchatshop);
+			model.addAttribute("listchatshop2", listchatshop2);
+			model.addAttribute("listchatuser", listchatuser);
+			model.addAttribute("mes", mes);
+			model.addAttribute("userc", userc);
+			model.addAttribute("shopc", shopc);
+			model.addAttribute("chatbox", new ChatBox());
+			type = "shopvsshop";
+			return "homes/chat";
+		}
+		return "homes/chat";
+	}
 }

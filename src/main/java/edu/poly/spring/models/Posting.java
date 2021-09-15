@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "postings")
-public class Posting {
+public class Posting implements java.lang.Comparable<Posting>{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -141,5 +141,11 @@ public class Posting {
 	public Posting() {
 		super();
 	}
+	
+	@Override
+	public int compareTo(Posting p) {
+		int id = p.getId();
+		return id-this.id;
+	}	
 	
 }

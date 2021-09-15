@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "postingdetails")
-public class PostingDetail {
-	
+public class PostingDetail implements java.lang.Comparable<PostingDetail>{
+		
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -174,6 +174,12 @@ public class PostingDetail {
 
 	public PostingDetail() {
 		super();
+	}
+
+	@Override
+	public int compareTo(PostingDetail pd) {
+		int id = pd.getId();
+		return id-this.id;
 	}	
 	
 }

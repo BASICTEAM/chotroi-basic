@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +65,7 @@ public class FrontEndController {
 
 	@Autowired
 	private PostingDetailService postingDetailService;
-	
+
 	@Autowired
 	private PostingSavedService postingSavedService;
 
@@ -280,6 +282,82 @@ public class FrontEndController {
 		return postingService.findPostingsByStatus("block");
 	}
 
+	@RequestMapping("/postings/list-sold/{id}")
+	public List<Posting> findStatusSoldByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("sold", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("sold", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-approved/{id}")
+	public List<Posting> findStatusApprovedByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("approved", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("approved", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-unapproved/{id}")
+	public List<Posting> findStatusUnapprovedByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("unapproved", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("unapproved", shop.get());
+		}
+
+		return listPostings;
+	}
+
+	@RequestMapping("/postings/list-block/{id}")
+	public List<Posting> findStatusBlockByIdUser(@PathVariable("id") Integer id) {
+
+		List<Posting> listPostings = new ArrayList<Posting>();
+
+		Optional<User> user = userService.findById(id);
+		Optional<Shop> shop = shopService.findById(id);
+
+		if (user.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndUser("block", user.get());
+		}
+
+		if (shop.isPresent()) {
+			listPostings = postingService.findPostingsByStatusAndShop("block", shop.get());
+		}
+
+		return listPostings;
+	}
+
 	@GetMapping("/postings/{id}/get")
 	public Optional<Posting> getPosting(@PathVariable("id") Integer id) {
 		return postingService.findById(id);
@@ -325,21 +403,33 @@ public class FrontEndController {
 
 	@GetMapping("postings/{id}/find-by-product")
 	public List<Posting> getPostingsByProduct(@PathVariable("id") Integer id) {
-		return postingService.findPostingsByProductId(id);
+		List<Posting> postings = postingService.findPostingsByProductId(id);
+		Collections.sort(postings);
+		return postings;
 	}
 
 	@GetMapping("postings/{id}/find-by-user")
 	public List<Posting> getPostingsByUser(@PathVariable("id") Integer id) {
+		List<Posting> listPosting = new ArrayList<Posting>();
 
 		Optional<User> user = userService.findById(id);
 		Optional<Shop> shop = shopService.findById(id);
 
 		if (user.isPresent()) {
-			return postingService.findByUser(user.get());
+			listPosting = postingService.findByUser(user.get());
+			if (listPosting.size() == 0) {
+				listPosting.add(new Posting(null, false, null, null, user.get(), null, null, null));
+			}
+			return listPosting;
 		}
 
 		if (shop.isPresent()) {
-			return postingService.findByShop(shop.get());
+			listPosting = postingService.findByShop(shop.get());
+			if (listPosting.size() == 0) {
+				listPosting.add(new Posting(null, false, null, null, null, shop.get(), null, null));
+			}
+			return listPosting;
+
 		}
 
 		return new ArrayList<Posting>();
@@ -361,7 +451,9 @@ public class FrontEndController {
 
 	@GetMapping("postingdetails/{title}/find-by-title")
 	public List<PostingDetail> getPostingDetailsByTitle(@PathVariable("title") String title) {
-		return postingDetailService.findPostingDetailByTitleContaining(title);
+		List<PostingDetail> postingDetails = postingDetailService.findPostingDetailByTitleContaining(title);
+		Collections.sort(postingDetails);
+		return postingDetails;
 	}
 
 	// -------------------------
@@ -370,7 +462,9 @@ public class FrontEndController {
 
 	@GetMapping("postingdetails/search")
 	public List<PostingDetail> getPostingsByKeyword(@RequestParam(name = "keyword") String keyword) {
-		return postingDetailService.findPostingDetailByTitleContaining(keyword);
+		List<PostingDetail> postingDetails = postingDetailService.findPostingDetailByTitleContaining(keyword);
+		Collections.sort(postingDetails);
+		return postingDetails;
 	}
 
 	@GetMapping("postings-detail-by-product-type/search")
@@ -385,9 +479,13 @@ public class FrontEndController {
 			List<Posting> postings = postingService.findPostingsByProductId(product.getId());
 			for (Posting posting : postings) {
 				PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
+				System.out.println(posting.getId());
+				System.out.println(pd.getId());
 				postingDetails.add(pd);
 			}
 		}
+
+		Collections.sort(postingDetails);
 
 		return postingDetails;
 	}
@@ -400,18 +498,27 @@ public class FrontEndController {
 			PostingDetail pd = postingDetailService.findPostingDetailByPostingId(posting.getId());
 			postingDetails.add(pd);
 		}
+
+		Collections.sort(postingDetails);
+
 		return postingDetails;
 	}
-	
+
 	@GetMapping("postings/{address}")
-	public List<PostingDetail> getPostings(@PathVariable("address") String address) {
+	public List<PostingDetail> getPostings(
+			@RequestParam(value = "addressPhuongXa", required = false) String addressPhuongXa,
+			@RequestParam(value = "addressQuanHuyen", required = false) String addressQuanHuyen,
+			@RequestParam(value = "addressTinhThanhPho", required = false) String addressTinhThanhPho) {
 		List<PostingDetail> postingDetails = new ArrayList<PostingDetail>();
-		
+
+		String address = "Phuong abc, Huyện Kiến Thuỵ, Thành phố Hải Phòng";
 		String[] parts = address.split(",");
 		String part1 = parts[0];
 		String part2 = parts[1].substring(1);
 		String part3 = parts[2].substring(1);
-		
+
+		System.out.println();
+
 		if (!part1.equals("")) {
 			List<PostingDetail> listPD = (List<PostingDetail>) postingDetailService.findAll();
 			for (int i = 0; i < listPD.size(); i++) {
@@ -420,18 +527,19 @@ public class FrontEndController {
 					postingDetails.add(listPD.get(i));
 				}
 			}
-			
+
 		}
-		
-		if (part2.equals("")) {
-			
-		}
+
 		return postingDetails;
 	}
-	
+
+	// -------------------------
+	// ------ POSTING SAVED MANAGER -----
+	// -------------------------
+
 	@GetMapping("posting-saved/find-all")
 	public List<PostingSaved> savePostingSaved() {
 		return (List<PostingSaved>) postingSavedService.findAll();
-	}
+	}	
 
 }

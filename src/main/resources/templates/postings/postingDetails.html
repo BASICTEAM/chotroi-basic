@@ -483,6 +483,18 @@
                         <strong>{{postingdetail.posting.shop.phone}}</strong>
                     </button>
                 </div>
+                <div class="row card-postingdetail-phone">
+                    <button ng-if="postingdetail.posting.shop != null">
+                    <a  th:href="@{chatshop/{{postingdetail.posting.shop.id}}}">
+                        <i class="fad fa-comments-alt"></i> Chat với người bán
+                    </a>
+                    </button>
+                    <button ng-if="postingdetail.posting.user != null">
+                    <a  th:href="@{chatuser/{{postingdetail.posting.user.id}}}">
+                        <i class="fad fa-comments-alt"></i> Chat với người bán
+                    </a>
+                    </button>
+                </div>
             </aside>
         </div>
         <div class="bbb_viewed row mt-4 pt-4">

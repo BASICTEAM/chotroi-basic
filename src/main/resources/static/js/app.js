@@ -11,9 +11,20 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
     var tinhs = [];
     var xas = [];
 
-    posFactory.getProducts = function() {
+    posFactory.getProductsType = function() {
         var promise = $http
             .get("/products-type/find-all")
+            .then((respone) => {
+                products = respone.data;
+                return products;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getProducts = function() {
+        var promise = $http
+            .get("/products/find-all")
             .then((respone) => {
                 products = respone.data;
                 return products;
@@ -143,6 +154,72 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         return promise;
     }
 
+    posFactory.getPostingsSoldByUserId = function(id) {
+        var promise = $http
+            .get("/postings/list-sold/" + id)
+            .then((respone) => {
+                postings = respone.data;
+                return postings;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getPostingsApprovedByUserId = function(id) {
+        var promise = $http
+            .get("/postings/list-approved/" + id)
+            .then((respone) => {
+                postings = respone.data;
+                return postings;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getPostingsUnapprovedByUserId = function(id) {
+        var promise = $http
+            .get("/postings/list-unapproved/" + id)
+            .then((respone) => {
+                postings = respone.data;
+                return postings;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getPostingsBlockByUserId = function(id) {
+        var promise = $http
+            .get("/postings/list-block/" + id)
+            .then((respone) => {
+                postings = respone.data;
+                return postings;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.updateStatusSoldPosting = function(id) {
+        var promise = $http
+            .put("http://localhost:8080/postings/" + id + "/set-sold")
+            .then((respone) => {
+                posting = respone.data;
+                return posting;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
+    posFactory.getPosting = function(id) {
+        var promise = $http
+            .get("/postings/" + id + "/get")
+            .then((respone) => {
+                posting = respone.data;
+                return posting;
+            })
+            .catch((reason) => console.log(reason));
+        return promise;
+    };
+
     return posFactory;
 })
 
@@ -162,7 +239,7 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         $scope.list_product = [];
         $scope.error = false;
 
-        posFactory.getProducts().then(
+        posFactory.getProductsType().then(
             data => {
                 $scope.list_product = data;
             }, reason => {
@@ -272,6 +349,7 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
     function($scope, $http, $window, posFactory) {
         $scope.list_postingDetals = [];
         $scope.postingSaveds = [];
+        $scope.postings = [];
 
         $scope.usernameLogin = document.getElementsByName("usernameLogin")[0].value;
         $scope.setPostingSave = false;
@@ -292,12 +370,29 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
 
         $scope.url = resultUrl;
 
+        posFactory.getProductsType().then(
+            data => {
+                $scope.products = data;
+            }, reason => {
+                console.log(reason);
+            }
+        )
+
         if (resultUrl == "loai-danh-muc") {
             posFactory.getPostingDetailsByProductType(arr[4]).then(
                 data => {
                     $scope.list_postingDetals = data;
-                    $scope.product = data[0].posting.product.postings.name;
-                    $scope.keyword = data[0].posting.product.postings.name;
+                    if (data.length != 0) {
+                        $scope.product = data[0].posting.product.postings.name;
+                        $scope.keyword = data[0].posting.product.postings.name;
+                    } else {
+                        for (const i in $scope.products) {
+                            var id = arr[4].substr(10);
+                            if (id == $scope.products[i].id) {
+                                $scope.product = $scope.products[i].name;
+                            }
+                        }
+                    }
                 }, reason => {
                     console.log(reason);
                 }
@@ -306,8 +401,19 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
             posFactory.getPostingDetailsByProduct(arr[4]).then(
                 data => {
                     $scope.list_postingDetals = data;
-                    $scope.product = data[0].posting.product.name;
-                    $scope.keyword = data[0].posting.product.name;
+                    if (data.length != 0) {
+                        $scope.product = data[0].posting.product.name;
+                        $scope.keyword = data[0].posting.product.name;
+                    } else {
+                        for (const i in $scope.products) {
+                            for (const j in $scope.products[i].products) {
+                                var id = arr[4].substr(10);
+                                if (id == $scope.products[i].products[j].id) {
+                                    $scope.product = $scope.products[i].products[j].name;
+                                }
+                            }
+                        }
+                    }
                 }, reason => {
                     console.log(reason);
                 }
@@ -316,13 +422,64 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
             posFactory.getPostingDetails(resultUrl).then(
                 data => {
                     $scope.list_postingDetals = data;
-
-                    console.log($scope.list_postingDetals);
                     $scope.keyword = resultUrl.substr(15);
                 }, reason => {
                     console.log(reason);
                 }
             )
+        }
+
+        $scope.load = function() {
+            if (resultUrl == "loai-danh-muc") {
+                posFactory.getPostingDetailsByProductType(arr[4]).then(
+                    data => {
+                        $scope.list_postingDetals = data;
+                        if (data.length != 0) {
+                            $scope.product = data[0].posting.product.postings.name;
+                            $scope.keyword = data[0].posting.product.postings.name;
+                        } else {
+                            for (const i in $scope.products) {
+                                var id = arr[4].substr(10);
+                                if (id == $scope.products[i].id) {
+                                    $scope.product = $scope.products[i].name;
+                                }
+                            }
+                        }
+                    }, reason => {
+                        console.log(reason);
+                    }
+                )
+            } else if (resultUrl == "danh-muc") {
+                posFactory.getPostingDetailsByProduct(arr[4]).then(
+                    data => {
+                        $scope.list_postingDetals = data;
+                        if (data.length != 0) {
+                            $scope.product = data[0].posting.product.name;
+                            $scope.keyword = data[0].posting.product.name;
+                        } else {
+                            for (const i in $scope.products) {
+                                for (const j in $scope.products[i].products) {
+                                    var id = arr[4].substr(10);
+                                    if (id == $scope.products[i].products[j].id) {
+                                        $scope.product = $scope.products[i].products[j].name;
+                                    }
+                                }
+                            }
+                        }
+                    }, reason => {
+                        console.log(reason);
+                    }
+                )
+            } else {
+                posFactory.getPostingDetails(resultUrl).then(
+                    data => {
+                        $scope.list_postingDetals = data;
+                        $scope.keyword = resultUrl.substr(15);
+                    }, reason => {
+                        console.log(reason);
+                    }
+                )
+            }
         }
 
         posFactory.getPostingSaved().then(
@@ -332,7 +489,6 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                     if (data[i].assessor == $scope.usernameLogin) {
                         $scope.postingSaveds.push(data[i]);
                     }
-
                 }
             }, reason => {
                 console.log(reason);
@@ -357,6 +513,112 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                 $window.location.href = "/" + id;
             }
         }
+        $scope.filter = function(min, max) {
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            for (const i in $scope.list_postingDetals2) {
+                if (min <= $scope.list_postingDetals2[i].price && $scope.list_postingDetals2[i].price <= max) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                    console.log(i);
+                    console.log($scope.list_postingDetals2[i].address);
+                    console.log($scope.list_postingDetals2[0].posting.type);
+                }
+            }
+
+        }
+        $scope.sortBy = function(propertyName) {
+            $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+            $scope.propertyName = propertyName;
+
+
+        }
+        $scope.searchaddress = function(xa, huyen, tinh) {
+            $scope.address = "Huyện " + xa.name + ", Xã " + huyen.name + ", Tỉnh " + tinh.name;
+            $scope.address1 = "Phường " + xa.name + ", Thành phố " + huyen.name + ", Tỉnh " + tinh.name;
+            $scope.address2 = "Xã " + xa.name + ", Thành phố " + huyen.name + ", Tỉnh " + tinh.name;
+            $scope.address3 = "Phường " + xa.name + ", Quận " + huyen.name + ", Thành phố " + tinh.name;
+
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            console.log($scope.list_postingDetals2);
+            for (const i in $scope.list_postingDetals2) {
+                console.log($scope.list_postingDetals2[i]);
+                if ($scope.address === $scope.list_postingDetals2[i].address) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                    console.log(i);
+                    console.log($scope.list_postingDetals2[i].address);
+                    console.log($scope.address);
+                }
+                if ($scope.address1 === $scope.list_postingDetals2[i].address) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                    console.log(i);
+                    console.log($scope.list_postingDetals2[i].address);
+                    console.log($scope.address1);
+                }
+                if ($scope.address2 === $scope.list_postingDetals2[i].address) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                    console.log(i);
+                    console.log($scope.list_postingDetals2[i].address);
+                    console.log($scope.address2);
+                }
+                if ($scope.address3 === $scope.list_postingDetals2[i].address) {
+                    console.log($scope.list_postingDetals2[i]);
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                    console.log($scope.list_postingDetals2[i].address);
+                    console.log($scope.address3);
+                }
+            }
+            console.log($scope.list_postingDetals);
+
+        }
+        $scope.filteruser = function() {
+            if ($scope.list_postingDetals.length == 0) {
+                $scope.load();
+            }
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            for (const i in $scope.list_postingDetals2) {
+                if ($scope.list_postingDetals2[i].posting.user != null) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                }
+            }
+        }
+        $scope.filtershop = function() {
+            if ($scope.list_postingDetals.length == 0) {
+                $scope.load();
+            }
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            for (const i in $scope.list_postingDetals2) {
+                if ($scope.list_postingDetals2[i].posting.shop != null) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                }
+            }
+        }
+        $scope.filterBan = function() {
+            if ($scope.list_postingDetals.length == 0) {
+                $scope.load();
+            }
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            for (const i in $scope.list_postingDetals2) {
+                if ($scope.list_postingDetals2[i].posting.type === false) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                }
+            }
+        }
+        $scope.filterMua = function() {
+            if ($scope.list_postingDetals.length == 0) {
+                $scope.load();
+            }
+            $scope.list_postingDetals2 = $scope.list_postingDetals;
+            $scope.list_postingDetals = [];
+            for (const i in $scope.list_postingDetals2) {
+                if ($scope.list_postingDetals2[i].posting.type === true) {
+                    $scope.list_postingDetals.push($scope.list_postingDetals2[i]);
+                }
+            }
+        }
 
     }
 ])
@@ -364,8 +626,8 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
 .controller("postingDetail", ["$scope", "$http", "$window", "posFactory",
         function($scope, $http, $window, posFactory) {
             $scope.postingdetail = {};
-            $scope.postings = [];
             $scope.postingsByUser = [];
+            $scope.products = [];
 
             $scope.usernameLogin = document.getElementsByName("usernameLogin")[0].value;
             $scope.setPostingSave = false;
@@ -402,7 +664,6 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                         if (data[i].assessor == $scope.usernameLogin) {
                             $scope.postingSaveds.push(data[i]);
                         }
-
                     }
                 }, reason => {
                     console.log(reason);
@@ -458,7 +719,7 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
                 }
             )
 
-            posFactory.getProducts().then(
+            posFactory.getProductsType().then(
                 data => {
                     $scope.productsType = data;
                 }, reason => {
@@ -477,32 +738,272 @@ var app = angular.module("myApp", ['ngRoute', 'ui.bootstrap'])
         function($scope, $http, $window, posFactory) {
 
             $scope.postings = [];
-            $scope.keyword = "";
+            $scope.productsType = [];
+            $scope.products = [];
+            $scope.postingsSold = [];
+            $scope.postingsApproved = [];
+            $scope.postingsUnapproved = [];
+            $scope.postingsBlock = [];
+            $scope.tinhs = [];
+            $scope.quanHuyens = [];
+            $scope.xas = [];
+            $scope.listQuanHuyen = [];
+            $scope.listXa = [];
+            $scope.postingShow = {};
+
+            $scope.isDisabled = true;
+            $scope.addressStatus = true;
+
+            $scope.usernameLogin = document.getElementsByName("usernameLogin")[0].value;
+            $scope.usernamePostingDetail = "";
 
             // Table & Pagination
             // PAGINATION
-            $scope.currentPage = 1;
-            $scope.itemsPerPage = 3;
+            $scope.currentPage0 = 1;
+            $scope.itemsPerPage0 = 3;
+            $scope.currentPage1 = 1;
+            $scope.itemsPerPage1 = 3;
+            $scope.currentPage2 = 1;
+            $scope.itemsPerPage2 = 3;
+            $scope.currentPage3 = 1;
+            $scope.itemsPerPage3 = 3;
 
             var url = window.location.href;
             var arr = url.split("/");
             var id = arr[3];
 
-            $scope.pageChanged = function() {
-                console.log($scope.currentPage);
-            };
-
             posFactory.getPostingsByUser(id).then(
                 data => {
                     $scope.postings = data;
+                    console.log(data);
+                    if (data.length != 0) {
+                        if ($scope.postings[0].user != null) {
+                            $scope.usernamePostingDetail = $scope.postings[0].user.username;
+                        }
+                        if ($scope.postings[0].shop != null) {
+                            $scope.usernamePostingDetail = $scope.postings[0].shop.username;
+                        }
+                    } else {
+
+                    }
                 }, reason => {
                     console.log(reason);
                 }
             )
 
+            posFactory.getPostingsApprovedByUserId(id).then(
+                data => {
+                    $scope.postingsApproved = data;
+                    if (data != '') {
+                        if ($scope.postings[0].user != null) {
+                            $scope.usernamePostingDetail = $scope.postings[0].user.username;
+                        }
+                        if ($scope.postings[0].shop != null) {
+                            $scope.usernamePostingDetail = $scope.postings[0].shop.username;
+                        }
+                    }
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            posFactory.getPostingsSoldByUserId(id).then(
+                data => {
+                    $scope.postingsSold = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            posFactory.getPostingsUnapprovedByUserId(id).then(
+                data => {
+                    $scope.postingsUnapproved = data;
+                    if (data != '') {
+                        if ($scope.postingsUnapproved[0].user != null) {
+                            $scope.usernamePostingDetail = $scope.postingsUnapproved[0].user.username;
+                        }
+                        if ($scope.postingsUnapproved[0].shop != null) {
+                            $scope.usernamePostingDetail = $scope.postingsUnapproved[0].shop.username;
+                        }
+                    }
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            posFactory.getPostingsBlockByUserId(id).then(
+                data => {
+                    $scope.postingsBlock = data;
+                    if (data != '') {
+                        if ($scope.postingsBlock[0].user != null) {
+                            $scope.usernamePostingDetail = $scope.postingsBlock[0].user.username;
+                        }
+                        if ($scope.postingsBlock[0].shop != null) {
+                            $scope.usernamePostingDetail = $scope.postingsBlock[0].shop.username;
+                        }
+                    }
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            posFactory.getProductsType().then(
+                data => {
+                    $scope.productsType = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            )
+
+            $scope.postingSave = function() {
+                $scope.isDisabled = false;
+            }
+
+            $scope.updateStatusPosting = function(id) {
+                posFactory.updateStatusSoldPosting(id).then(
+                    data => {
+                        location.reload();
+                    }, reason => { console.log(reason) }
+                )
+            }
+
+            $scope.getPosting = function(id) {
+                posFactory.getPosting(id).then(
+                    data => {
+                        $scope.postingShow = data;
+                    },
+                    reason => {
+                        console.log(reason);
+                    }
+                );
+            };
+
+            $scope.getPostingUpdate = function(id) {
+                if ($scope.isDisabled = false) {
+                    $scope.isDisabled = true;
+                } else {
+                    $scope.isDisabled = false;
+                }
+                posFactory.getPosting(id).then(
+                    data => {
+                        $scope.postingShow = data;
+                        $scope.productName = $scope.postingShow.product.name;
+                        $scope.addressName = $scope.postingShow.postings[0].address
+                    },
+                    reason => {
+                        console.log(reason);
+                    }
+                );
+
+            }
+
+            $scope.selectProductType = function() {
+                if ($scope.productTypeSelect == null) {
+                    $scope.products = [];
+                    $scope.productName = $scope.postingShow.product.name;
+                }
+
+                if ($scope.productTypeSelect != null) {
+                    for (const i in $scope.productsType) {
+                        var name = $scope.productsType[i].name;
+                        if (name == $scope.productTypeSelect.name) {
+                            $scope.products = $scope.productsType[i].products;
+                        }
+                    }
+                }
+            }
+
+            $scope.selectProduct = function() {
+                if ($scope.productSelect == null) {
+                    $scope.productName = '';
+                    $scope.productName = $scope.postingShow.product.name;
+                }
+
+                if ($scope.productSelect != null) {
+                    $scope.productName = $scope.productSelect.name
+                }
+            }
+
+            posFactory.getTinh().then(
+                data => {
+                    $scope.tinhs = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            );
+
+            posFactory.getQuanHuyen().then(
+                data => {
+                    $scope.quanHuyens = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            );
+
+            posFactory.getXa().then(
+                data => {
+                    $scope.xas = data;
+                }, reason => {
+                    console.log(reason);
+                }
+            );
+
+            $scope.selectTinh = function() {
+
+                if ($scope.tinhSelect == null) {
+                    $scope.addressStatus = true;
+                    if ($scope.xaSelect != null) {
+                        $scope.listXa = [];
+                        $scope.xaSelect.name_with_type = '';
+                    }
+                    if ($scope.huyenSelect != null) {
+                        $scope.listQuanHuyen = [];
+                        $scope.huyenSelect.name_with_type = '';
+                    }
+                }
+
+                if ($scope.tinhSelect != null) {
+                    $scope.addressStatus = false;
+                    $scope.listQuanHuyen = [];
+                    for (const i in $scope.quanHuyens) {
+                        var parent_code = $scope.quanHuyens[i].parent_code;
+                        if (parent_code == $scope.tinhSelect.code) {
+                            $scope.listQuanHuyen.push($scope.quanHuyens[i]);
+                        }
+                    }
+                }
+
+            };
+
+            $scope.selectHuyen = function() {
+
+                if ($scope.huyenSelect == null) {
+                    if ($scope.xaSelect != null) {
+                        $scope.listXa = [];
+                        $scope.xaSelect.name_with_type = '';
+                    }
+                    if ($scope.huyenSelect != null) {
+                        $scope.listQuanHuyen = [];
+                        $scope.huyenSelect.name_with_type = '';
+                    }
+
+                }
+
+                if ($scope.huyenSelect != null) {
+                    $scope.listXa = [];
+                    for (const i in $scope.xas) {
+                        var parent_code = $scope.xas[i].parent_code;
+                        if (parent_code == $scope.huyenSelect.code) {
+                            $scope.listXa.push($scope.xas[i]);
+                        }
+                    }
+                }
+            };
+
             $scope.goPostingDetail = function(id) {
-                console.log('/' + id);
-                $window.location.href = "/" + id;
+                if ($scope.isDisabled === true) {
+                    $window.location.href = "/" + id;
+                }
             }
 
         }

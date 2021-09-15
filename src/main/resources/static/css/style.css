@@ -24,16 +24,16 @@
 
 /* navbar */
 
-.navbar {
+.navbar-admin {
     font-size: 15px;
     background-color: #ffc13b !important;
 }
 
-.navbar li a {
+.navbar-admin li a {
     color: #1e3d59 !important;
 }
 
-.navbar li a:hover {
+.navbar-admin li a:hover {
     color: white !important;
 }
 
@@ -42,7 +42,7 @@
     color: black;
 }
 
-.navbar-toggler {
+.button-navbar-toggler {
     border-radius: 5px !important;
 }
 
@@ -1616,10 +1616,19 @@ hr.light {
     font-size: 16px;
 }
 
-.filtered-product-button-save-posting>button {
+.filtered-product-button-search-posting>button {
     position: absolute;
-    margin-top: -35px;
-    margin-left: -20px;
+    margin-top: -45px;
+    margin-left: -15px;
+    font-size: 30px;
+    color: #dc3545;
+}
+
+.filtered-product-button-search-posting>button:hover {
+    color: #df1313;
+}
+
+.filtered-product-button-save-posting>button {
     font-size: 30px;
     color: #dc3545;
 }
@@ -1641,7 +1650,8 @@ hr.light {
 .btn-group-filter-choose {
     font-size: 13px;
     border-radius: 7px !important;
-    margin: 10px;
+    /* margin: 10px; */
+    /* width: 120px; */
 }
 
 .card-body>a:hover {
@@ -2302,6 +2312,22 @@ aside {
 .profile-button-check:hover {
     color: white;
     background-color: rgb(19, 151, 78);
+}
+
+.profile-button-update {
+    position: absolute;
+    margin-top: -20px;
+    margin-left: -20px;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 50% !important;
+    background-color: white;
+    padding: 3px 7px;
+}
+
+.profile-button-update:hover {
+    color: white;
+    background-color: #007bff;
 }
 
 .filtered-products-card-profile {

@@ -44,4 +44,8 @@ public interface PostingService {
 
 	List<Posting> findTop16ByOrderByDateDesc();
 
+	List<Posting> findPostingsByStatusAndShop(String name, Shop shop);
+
+	List<Posting> findPostingsByStatusAndUser(String name, User user);
+
 }
